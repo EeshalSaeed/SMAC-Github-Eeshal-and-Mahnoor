@@ -11,6 +11,7 @@ def main(page: ft.Page):
     DG = "#5ca38f"
     W = "#FFFFFF"
     P= "#e53e34"
+    B= "#000000"
 
     #edit this to add more features ltr 
     empty_person = {
@@ -180,11 +181,11 @@ def main(page: ft.Page):
     )
 
     eye1= ft.Container(
-            content= ft.Icon(ft.Icons.VISIBILITY,color=W,size=20),
+            content= ft.Icon(ft.Icons.VISIBILITY,color=W),
             on_click=visibility)
     
     eye2= ft.Container(
-                content= ft.Icon(ft.Icons.VISIBILITY,color=W,size=20),
+                content= ft.Icon(ft.Icons.VISIBILITY,color=W),
                 on_click=visibility2)
     warn1= ft.Text(
             "Password must include atleast 6 characters.",
@@ -280,62 +281,12 @@ def main(page: ft.Page):
                     on_click= gotosignup
                 )
 
-    line1= ft.Container(
-        bgcolor= DG,
-        width= 120,
-        height=1,
-        top=540,
-        left=0
-        
-    )
-    Or= ft.Text(
-        "Or login with",
-        color= DG,
-        top=530,
-        left=155
-    )
-    line2= ft.Container(
-            bgcolor= DG,
-            width= 120,
-            height=1,
-            top=540,
-            right=0)
-
-    apple= ft.Image(
-        src=("applelogo.png"),
-        width=28,
-        height=28,
-        border_radius=ft.BorderRadius.all(0),
-        top=560,
-        left=90,
-        opacity=1
-
-
-    )
-
-    google= ft.Image(
-            src=("image.png"),
-            width=26,
-            height=26,
-            border_radius=ft.BorderRadius.all(0),
-            top=564,
-            left=180,
-            opacity=1
     
     
-        )
+    
+   
 
-    fabcebk= ft.Image(
-                src=("facebooklogo.webp"),
-                width=28,
-                height=28,
-                border_radius=ft.BorderRadius.all(0),
-                top=563,
-                left=275,
-                opacity=1
-        
-        
-            )
+    
 
     Sign= ft.Text(
                 "Sign Up",
@@ -505,8 +456,75 @@ def main(page: ft.Page):
                     top=-10,
                     right=80
                     )
+    Basic= ft.Text(
+            "Basic Cohorts",
+            size=50,
+            weight=ft.FontWeight.BOLD,
+            color=W,
+            top=90,
+            left=38
+        )
+    Age= ft.Container(
+        width=330,
+        height=60, 
+        bgcolor= ft.Colors.with_opacity(0.4,B),
+        top= 180,
+        left=36,
+        border_radius=ft.BorderRadius.all(5),
+        content= ft.Stack(
+        controls=[
+                ft.Text(
+                "1. What is your age?",
+                color=W,
+                weight=ft.FontWeight.NORMAL,
+                size=15,
+                top=5,
+                left=15,
+                opacity=1,
+            ),
+            ft.TextField(
+                bgcolor="transparent",
+                color=W,
+                border_color="transparent",
+                top=14,  
+                left=0,
+                width=280,
+                height=45,
+
+            ),
+        ]
+    ),
+)
+    gender = ft.Container(
+        width=300,
+        height=100,
+        bgcolor=ft.Colors.with_opacity(0.4, B),
+        top=300,
+        left=36,
+        border_radius=ft.BorderRadius.all(5),
+        content= ft.Stack(
+        controls=[ 
+            ft.Text('2. What is your gender', color= W, size=14,left= 10, top=5 ),
+            ft.RadioGroup(
+        content=ft.Stack(
+            controls=[
+                ft.Radio(value="male", label="Male",scale=0.8,top=20, left= 5),
+                ft.Radio(value="female", label="Female",scale=0.8,top=40, left=5),
+                ft.Radio(value="other", label="Other", scale=0.8,top=60, left=5),
+            ]
+        )
+    ),
+        ]
+)
+    )
+
+
+                      
+                
+                
+                
     
-            
+                  
 
 
 
@@ -523,6 +541,31 @@ def main(page: ft.Page):
 
 
 #PAGES
+    page_4= ft.Container(width=400,
+                        height=850,
+                        bgcolor=DG,
+                        border_radius=ft.BorderRadius.all(35),
+
+    
+                        content=ft.Stack(
+                                controls=[
+                                ft.Container(
+                                width=400,
+                        height=850,
+                        bgcolor=DG,
+                        border_radius=ft.BorderRadius.all(35),
+                        ),
+                        circle7,
+                        circle8,
+                        circle9,
+                        circle10,
+                        circle11,
+                        Basic,
+                        Age,
+                        gender
+                        ]))
+
+
     page_3= ft.Container(width=400,
                         height=850,
                         bgcolor=DG,
@@ -546,7 +589,8 @@ def main(page: ft.Page):
                         intro,
                         nextb,
                         circle10,
-                        circle11
+                        circle11,
+                        
 
                         ]))
                         
@@ -580,12 +624,6 @@ def main(page: ft.Page):
                                     info22,
                                     squaresign,
                                     log,
-                                    line1,
-                                    OrS,
-                                    line2,
-                                    apple,
-                                    google,
-                                    fabcebk,
                                     
                                     
                     
@@ -622,12 +660,7 @@ def main(page: ft.Page):
                   info2,
                   squarelog,
                   up,
-                  line1,
-                  Or,
-                  line2,
-                  apple,
-                  google,
-                  fabcebk,
+                  
                   
                   
                 
@@ -677,7 +710,7 @@ def main(page: ft.Page):
     current_view = ft.Container(
            width=400, height=850, bgcolor=LG,
            border_radius=ft.BorderRadius.all(35),
-           content=page_1,
+           content=page_4,
            animate= ft.Animation(300, ft.AnimationCurve.EASE_IN_OUT),
            animate_offset= ft.Animation(300, ft.AnimationCurve.EASE_IN),
            offset=ft.Offset(0,0)
@@ -696,6 +729,8 @@ def main(page: ft.Page):
 ft.app(target=main, view=ft.AppView.WEB_BROWSER)
 #python -c "import sys; from flet.cli import main; sys.argv = ['flet', 'run', 'Untitled-1.py', '--web']; main()"
 #Remove-Item family_data.json        
+#To do list :
+# Create survey
 
 
 
