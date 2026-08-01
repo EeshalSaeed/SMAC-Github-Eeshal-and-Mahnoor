@@ -94,7 +94,9 @@ def main(page: ft.Page):
             )
              info22.update()
              page_2.update()
-                      
+    def opensurvey(e): 
+        current_view.content= page_4 
+        current_view.update()         
     
 
     
@@ -431,13 +433,15 @@ def main(page: ft.Page):
         top= 500,
         left= 40,
         width= 200,
-        height= 60,
+        height= 50,
+         on_click= opensurvey,
         content= ft.Row(
             controls= [ft.Text("Next", size= 30, color= W),
                    ft.Icon(ft.Icons.ARROW_RIGHT,size=30,color=W)
                    ], 
                    alignment = ft.MainAxisAlignment.CENTER,
                    spacing=8,
+       
         
         ))
     circle10= ft.Container(
@@ -483,6 +487,8 @@ def main(page: ft.Page):
                 opacity=1,
             ),
             ft.TextField(
+                hint_text="Enter your age",
+                hint_style=ft.TextStyle(color=ft.Colors.WHITE70),
                 bgcolor="transparent",
                 color=W,
                 border_color="transparent",
@@ -496,29 +502,85 @@ def main(page: ft.Page):
     ),
 )
     gender = ft.Container(
-        width=300,
-        height=100,
+        width=330,
+        height=140,
         bgcolor=ft.Colors.with_opacity(0.4, B),
-        top=300,
+        top=260,
         left=36,
         border_radius=ft.BorderRadius.all(5),
         content= ft.Stack(
         controls=[ 
             ft.Text('2. What is your gender', color= W, size=14,left= 10, top=5 ),
+        ft.Container(
             ft.RadioGroup(
-        content=ft.Stack(
-            controls=[
-                ft.Radio(value="male", label="Male",scale=0.8,top=20, left= 5),
-                ft.Radio(value="female", label="Female",scale=0.8,top=40, left=5),
-                ft.Radio(value="other", label="Other", scale=0.8,top=60, left=5),
-            ]
+                content=ft.Column(
+                    controls=[
+                        ft.Radio(value="male", label="Male"),
+                        ft.Radio(value="female", label="Female"),
+                        ft.Radio(value="other", label="Prefer not to say"),
+                    ],
+            spacing=0.1,
         )
+
+
     ),
+        
+    top=30,
+    left=5,
+        ),
         ]
 )
     )
 
-
+    ancestry = ft.Container(
+            width=330,
+            height=260,
+            bgcolor=ft.Colors.with_opacity(0.4, B),
+            top=420,
+            left=36,
+            border_radius=ft.BorderRadius.all(5),
+            content= ft.Stack(
+            controls=[ 
+                ft.Text('3. What is your ancestry?', color= W, size=14,left= 10, top=5 ),
+            ft.Container(
+                ft.RadioGroup(
+                    content=ft.Column(
+                        controls=[
+                            ft.Radio(value="caucasian", label="Caucasian"),
+                            ft.Radio(value="African", label="African"),
+                            ft.Radio(value="South Asian", label="South Asian"),
+                            ft.Radio(value="East Asian", label="East Asian"),
+                            ft.Radio(value="Hispanic", label="Hispanic"),
+                            ft.Radio(value="Middle Eastern", label="Middle Eastern"),
+                            ft.Radio(value="Other", label="Other"),
+                        ],
+                spacing=0.1,
+            )
+    
+    
+        ),
+            
+        top=30,
+        left=5,
+            ),
+            ]
+    )
+        )
+    nexta= ft.Button(
+            bgcolor=ft.Colors.with_opacity(0.4, B),
+            top= 730,
+            left= 100,
+            width= 200,
+            height= 50,
+            content= ft.Row(
+                controls= [ft.Text("Next", size= 30, color= W),
+                       ft.Icon(ft.Icons.ARROW_RIGHT,size=30,color=W)
+                       ], 
+                       alignment = ft.MainAxisAlignment.CENTER,
+                       spacing=8,
+            
+            ))
+    
                       
                 
                 
@@ -562,7 +624,9 @@ def main(page: ft.Page):
                         circle11,
                         Basic,
                         Age,
-                        gender
+                        gender,
+                        ancestry,
+                        nexta,
                         ]))
 
 
@@ -710,7 +774,7 @@ def main(page: ft.Page):
     current_view = ft.Container(
            width=400, height=850, bgcolor=LG,
            border_radius=ft.BorderRadius.all(35),
-           content=page_4,
+           content=page_1,
            animate= ft.Animation(300, ft.AnimationCurve.EASE_IN_OUT),
            animate_offset= ft.Animation(300, ft.AnimationCurve.EASE_IN),
            offset=ft.Offset(0,0)
