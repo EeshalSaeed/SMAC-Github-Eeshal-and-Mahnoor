@@ -97,7 +97,12 @@ def main(page: ft.Page):
     def opensurvey(e): 
         current_view.content= page_4 
         current_view.update()         
-    
+    def nextpage(e):
+        
+            current_view.content= page_5
+            current_view.update()
+        
+
 
     
 
@@ -488,7 +493,7 @@ def main(page: ft.Page):
             ),
             ft.TextField(
                 hint_text="Enter your age",
-                hint_style=ft.TextStyle(color=ft.Colors.WHITE70),
+                hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
                 bgcolor="transparent",
                 color=W,
                 border_color="transparent",
@@ -572,6 +577,7 @@ def main(page: ft.Page):
             left= 100,
             width= 200,
             height= 50,
+            on_click= nextpage,
             content= ft.Row(
                 controls= [ft.Text("Next", size= 30, color= W),
                        ft.Icon(ft.Icons.ARROW_RIGHT,size=30,color=W)
@@ -580,8 +586,108 @@ def main(page: ft.Page):
                        spacing=8,
             
             ))
+    weight= ft.Container(
+            width=330,
+            height=60, 
+            bgcolor= ft.Colors.with_opacity(0.4,B),
+            top= 180,
+            left=36,
+            border_radius=ft.BorderRadius.all(5),
+            content= ft.Stack(
+            controls=[
+                    ft.Text(
+                    "4. What is your weight?",
+                    color=W,
+                    weight=ft.FontWeight.NORMAL,
+                    size=15,
+                    top=5,
+                    left=15,
+                    opacity=1,
+                ),
+                ft.TextField(
+                    hint_text="eg: 75kg or 165lbs",
+                    hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
+                    bgcolor="transparent",
+                    color=W,
+                    border_color="transparent",
+                    top=14,  
+                    left=0,
+                    width=280,
+                    height=45,
     
-                      
+                ),
+            ]
+        ),
+    )
+    height = ft.Container(
+                width=330,
+                height=60, 
+                bgcolor= ft.Colors.with_opacity(0.4,B),
+                top= 260,
+                left=36,
+                border_radius=ft.BorderRadius.all(5),
+                content= ft.Stack(
+                controls=[
+                        ft.Text(
+                        "5. What is your height?",
+                        color=W,
+                        weight=ft.FontWeight.NORMAL,
+                        size=15,
+                        top=5,
+                        left=15,
+                        opacity=1,
+                    ),
+                    ft.TextField(
+                        hint_text="eg: 1.75m or 5'9\"",
+                        hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
+                        bgcolor="transparent",
+                        color=W,
+                        border_color="transparent",
+                        top=14,  
+                        left=0,
+                        width=280,
+                        height=45,
+        
+                    ),
+                ]
+            ),
+        )
+    activity = ft.Container(
+            width=329,
+            height=200,
+            bgcolor=ft.Colors.with_opacity(0.4, B),
+            top=340,
+            left=36,
+            border_radius=ft.BorderRadius.all(5),
+            content= ft.Stack(
+            controls=[ 
+                ft.Text('6. What is your activity level?', color= W, size=14,left= 10, top=5 ),
+            ft.Container(
+                ft.RadioGroup(
+                    content=ft.Column(
+                        controls=[
+                            ft.Radio(value="sedentary", label="Sedentary"),
+                            ft.Radio(value="light", label="Lightly Active"),
+                            ft.Radio(value="moderate", label="Moderately Active"),
+                            ft.Radio(value="very", label="Very Active"),
+                            ft.Radio(value="extra", label="Extremely Active")
+                        ],
+                        
+                spacing=0.1,
+                        
+            )
+    
+    
+        ),
+        top=30,
+        left=5
+                           
+            
+        ),
+            ],
+            ),
+    )
+                    
                 
                 
                 
@@ -603,6 +709,33 @@ def main(page: ft.Page):
 
 
 #PAGES
+
+    page_5= ft.Container(width=400,
+                            height=850,
+                            bgcolor=DG,
+                            border_radius=ft.BorderRadius.all(35),
+    
+        
+                            content=ft.Stack(
+                                    controls=[
+                                    ft.Container(
+                                    width=400,
+                            height=850,
+                            bgcolor=DG,
+                            border_radius=ft.BorderRadius.all(35),
+                            ),
+                            circle7,
+                            circle8,
+                            circle9,
+                            circle10,
+                            circle11,
+                            Basic,
+                            weight,
+                            height,
+                            nexta,
+                            activity,
+                            ]))
+                         
     page_4= ft.Container(width=400,
                         height=850,
                         bgcolor=DG,
@@ -774,7 +907,7 @@ def main(page: ft.Page):
     current_view = ft.Container(
            width=400, height=850, bgcolor=LG,
            border_radius=ft.BorderRadius.all(35),
-           content=page_1,
+           content=page_5,
            animate= ft.Animation(300, ft.AnimationCurve.EASE_IN_OUT),
            animate_offset= ft.Animation(300, ft.AnimationCurve.EASE_IN),
            offset=ft.Offset(0,0)
@@ -795,13 +928,6 @@ ft.app(target=main, view=ft.AppView.WEB_BROWSER)
 #Remove-Item family_data.json        
 #To do list :
 # Create survey
-
-
-
-
-
-
-
 
 
 
