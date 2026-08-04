@@ -98,8 +98,14 @@ def main(page: ft.Page):
         current_view.content= page_4 
         current_view.update()         
     def nextpage(e):
-        
+        if current_view.content== page_4:
             current_view.content= page_5
+            current_view.update()
+        elif current_view.content== page_5:
+            current_view.content= page_6
+            current_view.update()
+        elif current_view.content== page_6:
+            current_view.content= page_7
             current_view.update()
         
 
@@ -653,7 +659,7 @@ def main(page: ft.Page):
             ),
         )
     activity = ft.Container(
-            width=329,
+            width=330,
             height=200,
             bgcolor=ft.Colors.with_opacity(0.4, B),
             top=340,
@@ -687,8 +693,75 @@ def main(page: ft.Page):
             ],
             ),
     )
-                    
+    history = ft.Container(
+        width= 340,
+        height=200,
+        top=180,
+        padding=ft.Padding.symmetric(vertical=10, horizontal=10),
+        bgcolor= ft.Colors.with_opacity(0.4, B),
+        left= 34, 
+        content=(  
+            ft.Column(
+            controls=[
+                ft.Text(
+                    "7. Do you have a family history of any of the following conditions?",
+                    width=300,
+                ),
+            ft.Checkbox(label="Heart disease"),
+            ft.Checkbox(label="High cholesterol"),
+            ft.Checkbox(label="Obesity"),
+            ft.Checkbox(label="Stroke"),
+            ft.Checkbox(label="Diabetes"), 
+            ft.Checkbox(label="High blood pressure"),
+            ft.Checkbox(label="Cancer"),
+            ft.Checkbox(label="None of the above"),
+            ft.TextField(
+                            hint_text=("Other (please specify)"),
+                            hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
+                            width=200,
+                            height= 40,
+                            border_color="transparent",
+                            ),
+            
+            ],
+
+            scroll=ft.ScrollMode.AUTO,
+        )
+    ) 
+    )
+    fami = ft.Container(
+            width= 340,
+            height=200,
+            top=400,
+            padding=ft.Padding.symmetric(vertical=10, horizontal=10),
+            bgcolor= ft.Colors.with_opacity(0.4, B),
+            left= 34, 
+            content=(  
+                ft.Column(
+                controls=[
+                    ft.Text(
+                        "8. Which of your family members have this condition? (Check all that apply)",
+                        width=300,
+                    ),
+                ft.Checkbox(label="Grandparents"),
+                ft.Checkbox(label="Parents"),
+                ft.Checkbox(label="Uncles/Aunts"),
+                ft.Checkbox(label="Siblings"),
+                ft.TextField(
+                                hint_text=("Other (please specify)"),
+                                hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
+                                width=200,
+                                height= 40,
+                                border_color="transparent",
+                                ),
+                ft.Checkbox(label="N/A"), 
                 
+                ],
+    
+                scroll=ft.ScrollMode.AUTO,
+            )
+        ) 
+        )
                 
                 
     
@@ -709,7 +782,57 @@ def main(page: ft.Page):
 
 
 #PAGES
+    page_7= page_6= ft.Container(width=400,
+                                    height=850,
+                                    bgcolor=DG,
+                                    border_radius=ft.BorderRadius.all(35),
+            
+                
+                                    content=ft.Stack(
+                                            controls=[
+                                            ft.Container(
+                                            width=400,
+                                    height=850,
+                                    bgcolor=DG,
+                                    border_radius=ft.BorderRadius.all(35),
+                                    ),
+                                    circle7,
+                                    circle8,
+                                    circle9,
+                                    circle10,
+                                    circle11,
+                                    Basic, ]))
+    page_6= ft.Container(width=400,
+                                height=850,
+                                bgcolor=DG,
+                                border_radius=ft.BorderRadius.all(35),
+        
+            
+                                content=ft.Stack(
+                                        controls=[
+                                        ft.Container(
+                                        width=400,
+                                height=850,
+                                bgcolor=DG,
+                                border_radius=ft.BorderRadius.all(35),
+                                ),
+                                circle7,
+                                circle8,
+                                circle9,
+                                circle10,
+                                circle11,
+                                Basic,
+                                history,
+                                nexta,
+                                fami,
+                                        ]
+                                )
+    )
+    
 
+
+
+                            
     page_5= ft.Container(width=400,
                             height=850,
                             bgcolor=DG,
@@ -734,6 +857,7 @@ def main(page: ft.Page):
                             height,
                             nexta,
                             activity,
+                            
                             ]))
                          
     page_4= ft.Container(width=400,
@@ -907,7 +1031,7 @@ def main(page: ft.Page):
     current_view = ft.Container(
            width=400, height=850, bgcolor=LG,
            border_radius=ft.BorderRadius.all(35),
-           content=page_5,
+           content=page_1,
            animate= ft.Animation(300, ft.AnimationCurve.EASE_IN_OUT),
            animate_offset= ft.Animation(300, ft.AnimationCurve.EASE_IN),
            offset=ft.Offset(0,0)
