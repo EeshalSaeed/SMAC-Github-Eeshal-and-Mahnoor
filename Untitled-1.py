@@ -1,3 +1,5 @@
+from turtle import bgcolor, left
+
 import flet as ft
 import copy
 import json
@@ -13,25 +15,31 @@ def main(page: ft.Page):
     P= "#e53e34"
     B= "#000000"
 
-    #edit this to add more features ltr 
+   
     empty_person = {
         "username": "",
-        "password": "",
-        "profile": {
-            "age": None,
-            "gender": None,
-            "race": None,
-            "family_history": [],
+    "password": "",
+    "profile": {
+        "age": None,
+        "gender": None,
+        "ancestry": None,
+        "height": None,          
+        "weight": None,          
+        "activity_level": None,
+        "family_history": {
+            "conditions": [],          
+            "conditions_other": "",
+            "affected_members": [],     
+            "affected_members_other": "",
         },
-        "ai_recommendations": {
-            "daily_calorie_target": None,
-            "food_group_targets": {},
-        },
-        "calendar": {},
-        "family_links": [],
-    }
-
-    family = {}
+    },
+    "ai_recommendations": {
+        "daily_calorie_target": None,
+        "food_group_targets": {},
+    },
+    "calendar": {},
+    "family_links": [],
+}
 
 
     
@@ -101,13 +109,39 @@ def main(page: ft.Page):
         if current_view.content== page_4:
             current_view.content= page_5
             current_view.update()
+            timeline(e)
         elif current_view.content== page_5:
             current_view.content= page_6
             current_view.update()
+            timeline(e)
         elif current_view.content== page_6:
             current_view.content= page_7
             current_view.update()
-        
+            timeline(e)
+
+    def timeline(e): 
+        if current_view.content== page_5:
+            T1.bgcolor= "Trasparent"
+            T1.border= ft.Border.all(2, ft.Colors.WHITE)
+            T1.content= ft.Text("1", color=W)
+            T1.update()
+            T2.bgcolor= W
+            T2.content= ft.Text("2", color=DG)
+            T2.update()
+            T3.bgcolor= "Transparent"
+            T3.update()
+        elif current_view.content== page_6:
+            T1.bgcolor= "Trasparent"
+            T1.border= ft.Border.all(2, ft.Colors.WHITE)
+            T1.content= ft.Text("1", color=W)
+            T1.update()
+            T3.bgcolor= W
+            T3.content= ft.Text("3", color=DG)
+            T3.update()
+            T2.bgcolor= "Transparent"
+            T2.border= ft.Border.all(2, ft.Colors.WHITE)
+            T2.content= ft.Text("2", color=W)
+            T2.update()
 
 
     
@@ -425,12 +459,12 @@ def main(page: ft.Page):
         )
     intro= ft.Text(
                 "We'll ask a few quick questions about your"
-                "age, family health history, and activity level."
-                "This helps Vale create nutrition targets that are actually personalised to you, not just a"
-                "generic calorie count. It takes about 2 minutes."
-                "Please don't close the app while"
+                " age, family health history, and activity level."
+                " This helps Vale create nutrition targets that are actually personalised to you, not just a"
+                " generic calorie count. It takes about 2 minutes."
+                " Please don't close the app while"
                 " completing this, since your answers won't"
-                "be saved until you finish. Click “Next” to continue.",
+                " be saved until you finish. Click “Next” to continue.",
                 size=13,
                 weight=ft.FontWeight.NORMAL,
                 color=W,
@@ -584,6 +618,7 @@ def main(page: ft.Page):
             width= 200,
             height= 50,
             on_click= nextpage,
+
             content= ft.Row(
                 controls= [ft.Text("Next", size= 30, color= W),
                        ft.Icon(ft.Icons.ARROW_RIGHT,size=30,color=W)
@@ -762,10 +797,88 @@ def main(page: ft.Page):
             )
         ) 
         )
-                
-                
+    end= ft.Text(
+        """
+        You have officially
+        completed the survey!
+        Click "End" so that 
+        we can save your results!""",
+        size=25,
+        weight= ft.FontWeight.NORMAL,
+        color=W,
+        top=260,
+        right=70
+    )            
+    End= ft.Button(
+        bgcolor=ft.Colors.with_opacity(0.4, B),
+        top= 500,
+        left= 40,
+        width= 200,
+        height= 50,
+        content= ft.Row(
+            controls= [ft.Text("End", size= 30, color= W),
+                   ft.Icon(ft.Icons.ARROW_RIGHT,size=30,color=W)
+                   ], 
+                   alignment = ft.MainAxisAlignment.CENTER,
+                   spacing=7,
     
-                  
+        )
+    )
+    gen= ft.Text(
+        "Genetic History",
+        size=50,
+        weight=ft.FontWeight.BOLD,
+        color=W,
+        top=90,
+        left=30
+    )
+    ac= ft.Text(
+        "Activity Level",
+        size=50,
+        weight=ft.FontWeight.BOLD,
+        color=W,
+        top=90,
+        left=45
+    )
+    T1= ft.Container(
+            width=40,
+            height=40,
+            bgcolor=W,
+            top=50,
+            left=90,
+            border_radius=5, 
+            border=ft.Border.all(2, ft.Colors.TRANSPARENT), 
+            alignment= ft.Alignment.CENTER,
+            content=ft.Text("1", color=DG),
+    )
+
+    
+    T2= ft.Container(
+                width=40,
+                height=40,
+                top=50,
+                left=170,
+                bgcolor="Transparent",
+                border_radius=5,
+                border=ft.Border.all(2, ft.Colors.WHITE),
+                alignment=ft.Alignment.CENTER,
+                content=ft.Text("2", color=W),
+    )
+
+
+    
+    T3= ft.Container(
+                width=40,
+                height=40,
+                bgcolor="Transparent",
+                top=50,
+                left=250,
+                border_radius=5,
+                border=ft.Border.all(2, ft.Colors.WHITE),
+                alignment=ft.Alignment.CENTER,
+                content=ft.Text("3", color=W),
+    )
+            
 
 
 
@@ -782,6 +895,7 @@ def main(page: ft.Page):
 
 
 #PAGES
+
     page_7= page_6= ft.Container(width=400,
                                     height=850,
                                     bgcolor=DG,
@@ -799,9 +913,13 @@ def main(page: ft.Page):
                                     circle7,
                                     circle8,
                                     circle9,
+                                    surv,
+                                    v,
+                                    end,
                                     circle10,
                                     circle11,
-                                    Basic, ]))
+                                    End,
+                                     ]))
     page_6= ft.Container(width=400,
                                 height=850,
                                 bgcolor=DG,
@@ -821,10 +939,13 @@ def main(page: ft.Page):
                                 circle9,
                                 circle10,
                                 circle11,
-                                Basic,
                                 history,
                                 nexta,
                                 fami,
+                                gen,
+                                T1,
+                                T2,
+                                T3
                                         ]
                                 )
     )
@@ -852,12 +973,14 @@ def main(page: ft.Page):
                             circle9,
                             circle10,
                             circle11,
-                            Basic,
                             weight,
                             height,
                             nexta,
                             activity,
-                            
+                            ac,
+                            T1,
+                            T2,
+                            T3
                             ]))
                          
     page_4= ft.Container(width=400,
@@ -884,6 +1007,9 @@ def main(page: ft.Page):
                         gender,
                         ancestry,
                         nexta,
+                        T1,
+                        T2,
+                        T3
                         ]))
 
 
@@ -981,6 +1107,7 @@ def main(page: ft.Page):
                   info2,
                   squarelog,
                   up,
+
                   
                   
                   
@@ -1031,7 +1158,7 @@ def main(page: ft.Page):
     current_view = ft.Container(
            width=400, height=850, bgcolor=LG,
            border_radius=ft.BorderRadius.all(35),
-           content=page_1,
+           content=page_3,
            animate= ft.Animation(300, ft.AnimationCurve.EASE_IN_OUT),
            animate_offset= ft.Animation(300, ft.AnimationCurve.EASE_IN),
            offset=ft.Offset(0,0)
@@ -1052,6 +1179,3 @@ ft.app(target=main, view=ft.AppView.WEB_BROWSER)
 #Remove-Item family_data.json        
 #To do list :
 # Create survey
-
-
-
