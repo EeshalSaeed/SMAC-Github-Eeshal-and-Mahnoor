@@ -17,29 +17,33 @@ def main(page: ft.Page):
 
    
     empty_person = {
-        "username": "",
-    "password": "",
-    "profile": {
-        "age": None,
-        "gender": None,
-        "ancestry": None,
-        "height": None,          
-        "weight": None,          
-        "activity_level": None,
-        "family_history": {
-            "conditions": [],          
-            "conditions_other": "",
-            "affected_members": [],     
-            "affected_members_other": "",
+        "name": "",
+        "profile": {
+            "age": None,
+            "gender": None,
+            "ancestry": None,
+            "height": None,
+            "weight": None,
+            "activity_level": None,
+            "family_history": {
+                "conditions": [],
+                "conditions_other": "",
+                "affected_members": [],
+                "affected_members_other": "",
+            },
         },
-    },
-    "ai_recommendations": {
-        "daily_calorie_target": None,
-        "food_group_targets": {},
-    },
-    "calendar": {},
-    "family_links": [],
-}
+        "ai_recommendations": {
+            "daily_calorie_target": None,
+            "food_group_targets": {},
+        },
+        "calendar": {},
+    }
+
+    empty_account = {
+        "username": "",
+        "password": "",
+        "members": {},
+    }
 
 
     
@@ -72,6 +76,8 @@ def main(page: ft.Page):
          current_view.content= page_1
          current_view.update()
     vis= [False]
+    current_user = [None]
+    current_member = [None]
 
     def visibility(e):
          if not vis[0]:
@@ -300,25 +306,34 @@ def main(page: ft.Page):
             page_2.update()
 
         else:
-            new_person = copy.deepcopy(empty_person)
-            new_person['username'] = info.value
-            new_person['password'] = info22.value
-            family[info.value] = new_person
+            new_account = copy.deepcopy(empty_account)
+            new_account['username'] = info.value
+            new_account['password'] = info22.value
+
+            first_member = copy.deepcopy(empty_person)
+            first_member['name'] = info.value
+            new_account['members'][info.value] = first_member
+
+            family[info.value] = new_account
             save_family()
+
+            current_user[0] = info.value
+            current_member[0] = info.value
+
             current_view.content= page_3
             current_view.update()
+           
 
-        
 
     squarelog= ft.Button(
-        content= ft.Text("Log In", color=W,size=20),
-        bgcolor=LG,
-        top=460,
-        left=50,
-        width=300,
-        height=30,
-        style= ft.ButtonStyle( shape= ft.RoundedRectangleBorder(radius=5)),
-
+                    content= ft.Text("Log In", color=W,size=20),
+                    bgcolor=LG,
+                    top=460,
+                    left=50,
+                    width=300,
+                    height=30,
+                    style= ft.ButtonStyle( shape= ft.RoundedRectangleBorder(radius=5)),
+                    
     )
 
     up=  ft.TextButton(
@@ -336,12 +351,12 @@ def main(page: ft.Page):
     
 
     Sign= ft.Text(
-                "Sign Up",
+                "Create An Account!",
                 size=25,
                 weight=ft.FontWeight.BOLD,
                 color=DG,
                 top=280,
-                left=148,
+                left=90,
                 
 
     )
@@ -464,7 +479,7 @@ def main(page: ft.Page):
                 " generic calorie count. It takes about 2 minutes."
                 " Please don't close the app while"
                 " completing this, since your answers won't"
-                " be saved until you finish. Click “Next” to continue.",
+                " be saved until you finish. Click \u201cNext\u201d to continue.",
                 size=13,
                 weight=ft.FontWeight.NORMAL,
                 color=W,
@@ -513,6 +528,17 @@ def main(page: ft.Page):
             top=90,
             left=38
         )
+    age_field = ft.TextField(
+        hint_text="Enter your age",
+        hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
+        bgcolor="transparent",
+        color=W,
+        border_color="transparent",
+        top=14,  
+        left=0,
+        width=280,
+        height=45,
+    )
     Age= ft.Container(
         width=330,
         height=60, 
@@ -531,21 +557,20 @@ def main(page: ft.Page):
                 left=15,
                 opacity=1,
             ),
-            ft.TextField(
-                hint_text="Enter your age",
-                hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
-                bgcolor="transparent",
-                color=W,
-                border_color="transparent",
-                top=14,  
-                left=0,
-                width=280,
-                height=45,
-
-            ),
+            age_field,
         ]
     ),
 )
+    gender_radio = ft.RadioGroup(
+        content=ft.Column(
+            controls=[
+                ft.Radio(value="male", label="Male"),
+                ft.Radio(value="female", label="Female"),
+                ft.Radio(value="other", label="Prefer not to say"),
+            ],
+            spacing=0.1,
+        )
+    )
     gender = ft.Container(
         width=330,
         height=140,
@@ -557,18 +582,7 @@ def main(page: ft.Page):
         controls=[ 
             ft.Text('2. What is your gender', color= W, size=14,left= 10, top=5 ),
         ft.Container(
-            ft.RadioGroup(
-                content=ft.Column(
-                    controls=[
-                        ft.Radio(value="male", label="Male"),
-                        ft.Radio(value="female", label="Female"),
-                        ft.Radio(value="other", label="Prefer not to say"),
-                    ],
-            spacing=0.1,
-        )
-
-
-    ),
+            gender_radio,
         
     top=30,
     left=5,
@@ -577,6 +591,20 @@ def main(page: ft.Page):
 )
     )
 
+    ancestry_radio = ft.RadioGroup(
+        content=ft.Column(
+            controls=[
+                ft.Radio(value="caucasian", label="Caucasian"),
+                ft.Radio(value="African", label="African"),
+                ft.Radio(value="South Asian", label="South Asian"),
+                ft.Radio(value="East Asian", label="East Asian"),
+                ft.Radio(value="Hispanic", label="Hispanic"),
+                ft.Radio(value="Middle Eastern", label="Middle Eastern"),
+                ft.Radio(value="Other", label="Other"),
+            ],
+            spacing=0.1,
+        )
+    )
     ancestry = ft.Container(
             width=330,
             height=260,
@@ -588,22 +616,7 @@ def main(page: ft.Page):
             controls=[ 
                 ft.Text('3. What is your ancestry?', color= W, size=14,left= 10, top=5 ),
             ft.Container(
-                ft.RadioGroup(
-                    content=ft.Column(
-                        controls=[
-                            ft.Radio(value="caucasian", label="Caucasian"),
-                            ft.Radio(value="African", label="African"),
-                            ft.Radio(value="South Asian", label="South Asian"),
-                            ft.Radio(value="East Asian", label="East Asian"),
-                            ft.Radio(value="Hispanic", label="Hispanic"),
-                            ft.Radio(value="Middle Eastern", label="Middle Eastern"),
-                            ft.Radio(value="Other", label="Other"),
-                        ],
-                spacing=0.1,
-            )
-    
-    
-        ),
+                ancestry_radio,
             
         top=30,
         left=5,
@@ -627,6 +640,17 @@ def main(page: ft.Page):
                        spacing=8,
             
             ))
+    weight_field = ft.TextField(
+        hint_text="eg: 75kg or 165lbs",
+        hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
+        bgcolor="transparent",
+        color=W,
+        border_color="transparent",
+        top=14,  
+        left=0,
+        width=280,
+        height=45,
+    )
     weight= ft.Container(
             width=330,
             height=60, 
@@ -645,20 +669,20 @@ def main(page: ft.Page):
                     left=15,
                     opacity=1,
                 ),
-                ft.TextField(
-                    hint_text="eg: 75kg or 165lbs",
-                    hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
-                    bgcolor="transparent",
-                    color=W,
-                    border_color="transparent",
-                    top=14,  
-                    left=0,
-                    width=280,
-                    height=45,
-    
-                ),
+                weight_field,
             ]
         ),
+    )
+    height_field = ft.TextField(
+        hint_text="eg: 1.75m or 5'9\"",
+        hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
+        bgcolor="transparent",
+        color=W,
+        border_color="transparent",
+        top=14,  
+        left=0,
+        width=280,
+        height=45,
     )
     height = ft.Container(
                 width=330,
@@ -669,7 +693,7 @@ def main(page: ft.Page):
                 border_radius=ft.BorderRadius.all(5),
                 content= ft.Stack(
                 controls=[
-                        ft.Text(
+                ft.Text(
                         "5. What is your height?",
                         color=W,
                         weight=ft.FontWeight.NORMAL,
@@ -678,21 +702,22 @@ def main(page: ft.Page):
                         left=15,
                         opacity=1,
                     ),
-                    ft.TextField(
-                        hint_text="eg: 1.75m or 5'9\"",
-                        hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
-                        bgcolor="transparent",
-                        color=W,
-                        border_color="transparent",
-                        top=14,  
-                        left=0,
-                        width=280,
-                        height=45,
-        
-                    ),
+                height_field,
                 ]
             ),
         )
+    activity_radio = ft.RadioGroup(
+        content=ft.Column(
+            controls=[
+                ft.Radio(value="sedentary", label="Sedentary"),
+                ft.Radio(value="light", label="Lightly Active"),
+                ft.Radio(value="moderate", label="Moderately Active"),
+                ft.Radio(value="very", label="Very Active"),
+                ft.Radio(value="extra", label="Extremely Active")
+            ],
+            spacing=0.1,
+        )
+    )
     activity = ft.Container(
             width=330,
             height=200,
@@ -704,22 +729,7 @@ def main(page: ft.Page):
             controls=[ 
                 ft.Text('6. What is your activity level?', color= W, size=14,left= 10, top=5 ),
             ft.Container(
-                ft.RadioGroup(
-                    content=ft.Column(
-                        controls=[
-                            ft.Radio(value="sedentary", label="Sedentary"),
-                            ft.Radio(value="light", label="Lightly Active"),
-                            ft.Radio(value="moderate", label="Moderately Active"),
-                            ft.Radio(value="very", label="Very Active"),
-                            ft.Radio(value="extra", label="Extremely Active")
-                        ],
-                        
-                spacing=0.1,
-                        
-            )
-    
-    
-        ),
+                activity_radio,
         top=30,
         left=5
                            
@@ -727,6 +737,21 @@ def main(page: ft.Page):
         ),
             ],
             ),
+    )
+    cb_heart = ft.Checkbox(label="Heart disease")
+    cb_cholesterol = ft.Checkbox(label="High cholesterol")
+    cb_obesity = ft.Checkbox(label="Obesity")
+    cb_stroke = ft.Checkbox(label="Stroke")
+    cb_diabetes = ft.Checkbox(label="Diabetes")
+    cb_bp = ft.Checkbox(label="High blood pressure")
+    cb_cancer = ft.Checkbox(label="Cancer")
+    cb_none_history = ft.Checkbox(label="None of the above")
+    history_other = ft.TextField(
+        hint_text=("Other (please specify)"),
+        hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
+        width=200,
+        height= 40,
+        border_color="transparent",
     )
     history = ft.Container(
         width= 340,
@@ -742,27 +767,33 @@ def main(page: ft.Page):
                     "7. Do you have a family history of any of the following conditions?",
                     width=300,
                 ),
-            ft.Checkbox(label="Heart disease"),
-            ft.Checkbox(label="High cholesterol"),
-            ft.Checkbox(label="Obesity"),
-            ft.Checkbox(label="Stroke"),
-            ft.Checkbox(label="Diabetes"), 
-            ft.Checkbox(label="High blood pressure"),
-            ft.Checkbox(label="Cancer"),
-            ft.Checkbox(label="None of the above"),
-            ft.TextField(
-                            hint_text=("Other (please specify)"),
-                            hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
-                            width=200,
-                            height= 40,
-                            border_color="transparent",
-                            ),
+            cb_heart,
+            cb_cholesterol,
+            cb_obesity,
+            cb_stroke,
+            cb_diabetes, 
+            cb_bp,
+            cb_cancer,
+            cb_none_history,
+            history_other,
             
             ],
 
             scroll=ft.ScrollMode.AUTO,
         )
     ) 
+    )
+    cb_grandparents = ft.Checkbox(label="Grandparents")
+    cb_parents = ft.Checkbox(label="Parents")
+    cb_uncles_aunts = ft.Checkbox(label="Uncles/Aunts")
+    cb_siblings = ft.Checkbox(label="Siblings")
+    cb_na = ft.Checkbox(label="N/A")
+    fami_other = ft.TextField(
+        hint_text=("Other (please specify)"),
+        hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
+        width=200,
+        height= 40,
+        border_color="transparent",
     )
     fami = ft.Container(
             width= 340,
@@ -778,18 +809,12 @@ def main(page: ft.Page):
                         "8. Which of your family members have this condition? (Check all that apply)",
                         width=300,
                     ),
-                ft.Checkbox(label="Grandparents"),
-                ft.Checkbox(label="Parents"),
-                ft.Checkbox(label="Uncles/Aunts"),
-                ft.Checkbox(label="Siblings"),
-                ft.TextField(
-                                hint_text=("Other (please specify)"),
-                                hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
-                                width=200,
-                                height= 40,
-                                border_color="transparent",
-                                ),
-                ft.Checkbox(label="N/A"), 
+                cb_grandparents,
+                cb_parents,
+                cb_uncles_aunts,
+                cb_siblings,
+                fami_other,
+                cb_na, 
                 
                 ],
     
@@ -798,6 +823,7 @@ def main(page: ft.Page):
         ) 
         )
     end= ft.Text(
+
         """
         You have officially
         completed the survey!
@@ -809,12 +835,38 @@ def main(page: ft.Page):
         top=260,
         right=70
     )            
+    #function:
+    def filtercblabels(cblabels):
+        chosen=[]              
+        for i in cblabels:
+           if i.value:
+             chosen. append(i.label)    
+        return chosen
+    
+    def save_results(e):
+        information=family[current_user[0]]['members'][current_member[0]]
+
+        information['profile']['age']= age_field.value
+        information['profile']['gender']= gender_radio.value
+        information['profile']['ancestry']= ancestry_radio.value  
+        information['profile']['weight']= weight_field.value
+        information['profile']['height']= height_field.value
+        information['profile']['activity_level']= activity_radio.value
+        information['profile']['family_history']['conditions']= filtercblabels([cb_heart, cb_cholesterol, cb_obesity, cb_stroke, cb_diabetes, cb_bp, cb_cancer, cb_none_history])
+        information['profile']['family_history']['conditions_other']= history_other.value
+        information['profile']['family_history']['affected_members']= filtercblabels([cb_grandparents, cb_parents, cb_siblings, cb_na, cb_uncles_aunts])
+        information['profile']['family_history']['affected_members_other']= fami_other.value
+        save_family()
+        print(information)
+
+                    
     End= ft.Button(
         bgcolor=ft.Colors.with_opacity(0.4, B),
         top= 500,
         left= 40,
         width= 200,
         height= 50,
+        on_click= save_results,
         content= ft.Row(
             controls= [ft.Text("End", size= 30, color= W),
                    ft.Icon(ft.Icons.ARROW_RIGHT,size=30,color=W)
@@ -1070,8 +1122,7 @@ def main(page: ft.Page):
                                     info,
                                     info22,
                                     squaresign,
-                                    log,
-                                    
+                                    log
                                     
                     
                                     ]
@@ -1105,8 +1156,9 @@ def main(page: ft.Page):
                   instruc,
                   info,
                   info2,
-                  squarelog,
                   up,
+                  squarelog
+                  
 
                   
                   
@@ -1158,7 +1210,7 @@ def main(page: ft.Page):
     current_view = ft.Container(
            width=400, height=850, bgcolor=LG,
            border_radius=ft.BorderRadius.all(35),
-           content=page_3,
+           content=page_1,
            animate= ft.Animation(300, ft.AnimationCurve.EASE_IN_OUT),
            animate_offset= ft.Animation(300, ft.AnimationCurve.EASE_IN),
            offset=ft.Offset(0,0)
