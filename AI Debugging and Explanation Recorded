@@ -1,0 +1,11 @@
+AI Debugging:
+
+Missing content= keyword on a Container (positional-argument-after-keyword-argument error)
+ft.MainAxisAlignment.CENTER passed to Text (invalid property — doesn't exist on Text)
+Missing alignment=ft.Alignment.CENTER on the "1" progress circle, causing visual misalignment
+Repeated age_field= / height_field= typed as bare assignments inside controls=[...] lists (SyntaxError)
+gender_radio= attached to the wrong control (the wrapping Container instead of the RadioGroup)
+ancestry_radio= / activity_radio= passed as invalid keyword arguments into ft.Container(...)
+Indentation bug in your own filtercblabels draft (return not aligned with for)
+Missing .label in your own filtercblabels draft (was appending the whole checkbox object, not its text — would have broken json.dump)
+
