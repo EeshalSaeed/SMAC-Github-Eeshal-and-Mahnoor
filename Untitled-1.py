@@ -4,6 +4,8 @@ import flet as ft
 import copy
 import json
 import os
+import flet_video
+import time
 
 def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
@@ -148,9 +150,14 @@ def main(page: ft.Page):
             T2.border= ft.Border.all(2, ft.Colors.WHITE)
             T2.content= ft.Text("2", color=W)
             T2.update()
+    def start(e):
+        current_view.content= page_1
+        current_view.update()
+    def ahh():
+        time.sleep(5) 
+        current_view.content = page_1
+        current_view.update()   
 
-
-    
 
 
 
@@ -930,10 +937,20 @@ def main(page: ft.Page):
                 alignment=ft.Alignment.CENTER,
                 content=ft.Text("3", color=W),
     )
+
+    screen= flet_video.Video(
+            playlist=[flet_video.VideoMedia(resource="ValeOpeningScreen.mp4")],
+            autoplay=True,
+            controls=None,
+            muted=True,
+            width=400,
+            height=840,
+            fill_color= "#4c9d86",
+            on_complete= ahh
             
-
-
-
+           
+    )    
+   
 
 
 
@@ -947,8 +964,15 @@ def main(page: ft.Page):
 
 
 #PAGES
+    page_0= ft.Container(
+                        content= screen,
+                        width=400,
+                        height=850,
+                        bgcolor=DG,
+                        border_radius=ft.BorderRadius.all(35),
+                                    )
 
-    page_7= page_6= ft.Container(width=400,
+    page_7= ft.Container(width=400,
                                     height=850,
                                     bgcolor=DG,
                                     border_radius=ft.BorderRadius.all(35),
@@ -1210,11 +1234,13 @@ def main(page: ft.Page):
     current_view = ft.Container(
            width=400, height=850, bgcolor=LG,
            border_radius=ft.BorderRadius.all(35),
-           content=page_1,
+           content=page_0,
            animate= ft.Animation(300, ft.AnimationCurve.EASE_IN_OUT),
            animate_offset= ft.Animation(300, ft.AnimationCurve.EASE_IN),
            offset=ft.Offset(0,0)
     )
+
+
 
     outer_stack = ft.Stack(
         controls=[
@@ -1223,6 +1249,7 @@ def main(page: ft.Page):
         ]
     )
     page.add(outer_stack)
+
 
 
 
