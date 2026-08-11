@@ -1,5 +1,5 @@
-from turtle import bgcolor, left
 
+import asyncio
 import flet as ft
 import copy
 import json
@@ -7,7 +7,7 @@ import os
 import flet_video
 import time
 
-def main(page: ft.Page):
+async def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
@@ -16,6 +16,8 @@ def main(page: ft.Page):
     W = "#FFFFFF"
     P= "#e53e34"
     B= "#000000"
+    DDG= "#4c9d86"
+    LLG="#8FC682"
 
    
     empty_person = {
@@ -153,9 +155,12 @@ def main(page: ft.Page):
     def start(e):
         current_view.content= page_1
         current_view.update()
-    def ahh():
-        time.sleep(5) 
-        current_view.content = page_1
+    async def ahh():
+        await asyncio.sleep(0.5)
+        screen.jump_to(0)
+        screen.play()
+        await asyncio.sleep(8.5)
+        current_view.content = page_9
         current_view.update()   
 
 
@@ -939,17 +944,46 @@ def main(page: ft.Page):
     )
 
     screen= flet_video.Video(
-            playlist=[flet_video.VideoMedia(resource="ValeOpeningScreen.mp4")],
+            playlist=[flet_video.VideoMedia(resource="ValeOpeningScreen3.mp4")],
             autoplay=True,
             controls=None,
             muted=True,
             width=400,
             height=840,
-            fill_color= "#4c9d86",
-            on_complete= ahh
+            fill_color= DDG,
+            on_complete=ahh
             
            
     )    
+    logo2= ft.Image(
+        src= ('Vale Logo (5).png'),
+        width=240,
+        height=240,
+        left=75,
+        top= 125,
+    )
+    signlog= ft.Button(
+         content= ft.Text("Sign Up/Login", color=W,size=25, weight=ft.FontWeight.W_100),
+         bgcolor=LLG,
+         top=380, 
+         left=65, 
+         width=270,
+         height=50,
+         style= ft.ButtonStyle( shape= ft.RoundedRectangleBorder(radius=5)),
+         on_click= gotologin
+
+    )
+    learn= ft.Button(
+             content= ft.Text("Learn About Vale", color=W,size=25, weight=ft.FontWeight.W_100),
+             bgcolor=LLG,
+             top=460, 
+             left=65, 
+             width=270,
+             height=50,
+             style= ft.ButtonStyle( shape= ft.RoundedRectangleBorder(radius=5)),
+    
+        )
+
    
 
 
@@ -1026,7 +1060,24 @@ def main(page: ft.Page):
                                 )
     )
     
-
+    page_9=ft.Container(width=400,
+                                    height=850,
+                                    bgcolor=DDG,
+                                    border_radius=ft.BorderRadius.all(35),
+            
+                
+                                    content=ft.Stack(
+                                            controls=[
+                                            ft.Container(
+                                            width=400,
+                                    height=850,
+                                    bgcolor=DDG,
+                                    border_radius=ft.BorderRadius.all(35),
+                                    ),
+                                    logo2,
+                                    signlog,
+                                    learn,
+                                    ]))
 
 
                             
@@ -1235,8 +1286,10 @@ def main(page: ft.Page):
            width=400, height=850, bgcolor=LG,
            border_radius=ft.BorderRadius.all(35),
            content=page_0,
-           animate= ft.Animation(300, ft.AnimationCurve.EASE_IN_OUT),
-           animate_offset= ft.Animation(300, ft.AnimationCurve.EASE_IN),
+           animate_opacity= 300,
+           animate_scale=ft.Animation(300, "easeInOut"),
+           animate= ft.Animation(100, ft.AnimationCurve.EASE_IN_OUT_CUBIC_EMPHASIZED),
+           animate_offset= ft.Animation(100, ft.AnimationCurve.EASE_IN_OUT_CUBIC_EMPHASIZED),
            offset=ft.Offset(0,0)
     )
 
@@ -1251,10 +1304,8 @@ def main(page: ft.Page):
     page.add(outer_stack)
 
 
-
-
 ft.app(target=main, view=ft.AppView.WEB_BROWSER)
 #python -c "import sys; from flet.cli import main; sys.argv = ['flet', 'run', 'Untitled-1.py', '--web']; main()"
 #Remove-Item family_data.json        
 #To do list :
-# Create survey
+# Create survey.
