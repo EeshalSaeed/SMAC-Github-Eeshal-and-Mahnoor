@@ -1,6 +1,7 @@
 
 import asyncio
 from tkinter import NORMAL
+from cv2 import repeat
 import flet as ft
 import copy
 import json
@@ -170,8 +171,17 @@ async def main(page: ft.Page):
         else:
             current_view.content= page_10
             current_view.update()
-
-
+    def getcamera(cameras):
+        cam=[]
+        for i in cameras:
+            if i.lens_direction==flet_camera.CameraLensDirection.FRONT:
+                cam.append(i)
+                return cam
+    async def opencam(e):
+        tp= await camera.get_available_cameras()
+        camtype= getcamera(tp)
+        if camtype:
+           await camera.initialize(camtype[0], flet_camera.ResolutionPreset.VERY_HIGH, enable_audio=False)
 
          
 
@@ -1127,20 +1137,46 @@ async def main(page: ft.Page):
                 opacity=1,
                 top=660,
                 left=100)
-    cam = ft.FilePicker()
-    page.overlay.append(cam)
+    camera= flet_camera.Camera(
+        width=400,
+        height=400,
+        
 
-    photo = ft.Image(src="", width=200, height=200, visible=False)
+                                )
+    camera1= ft.Container(
+                    width=350,
+                    height=500,
+                    top=70,
+                    left=30,
+                    content= camera,
+                    border_radius=ft.BorderRadius.all(10),
+            )
+    cambutton= ft.Button(
+        content= ft.Text("Take A Photo", color= W,size=20),
+        width=200,
+        height=50,
+        top=600,
+        left=105,
+        bgcolor= "Transparent",
+        on_click= opencam,
 
-    async def takephoto(e):
-        tp = await cam.pick_files(file_type=ft.FilePickerFileType.IMAGE)
-        if tp:
-            photo.src = tp[0].path
-            photo.visible = True
-            photo.update()
-    wohoo= ft.Button(content= ft.Text("Take Photo", size= 20, color= W), width= 200, height= 100, bgcolor= "Transparent", on_click= takephoto)
-
-   
+    )
+    food= flet_video.Video(
+                playlist=[flet_video.VideoMedia(resource="food.mp4")],
+                autoplay=True,
+                controls=None,
+                muted=True,
+                width=350,
+                height=500,)
+    camera2= ft.Container(
+                width=350,
+                height=500,
+                top=70,
+                left=30,
+                content=food,
+                bgcolor= "#437769",
+                border_radius=ft.BorderRadius.all(10),
+        )              
 
 
 
@@ -1169,9 +1205,10 @@ async def main(page: ft.Page):
                                     bgcolor=DG,
                                     border_radius=ft.BorderRadius.all(35),
                                     ),
-                                    photo,
-                                    wohoo
-                                   
+                                    camera2,
+                                    cambutton,
+                                    menu1,
+                                    camera1,
                                     
                                     ]))
     page_10= ft.Container(width=400,
@@ -1491,7 +1528,7 @@ async def main(page: ft.Page):
     current_view = ft.Container(
            width=400, height=850, bgcolor=LG,
            border_radius=ft.BorderRadius.all(35),
-           content=page_11,
+           content=page_0,
            offset=ft.Offset(0,0)
     )
 
