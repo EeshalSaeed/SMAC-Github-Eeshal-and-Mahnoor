@@ -1,7 +1,8 @@
 
 import asyncio
 from tkinter import NORMAL
-from cv2 import repeat
+from turtle import done
+from cv2 import FILLED, repeat
 import flet as ft
 import copy
 import json
@@ -20,6 +21,7 @@ async def main(page: ft.Page):
     B= "#000000"
     DDG= "#4c9d86"
     LLG="#8FC682"
+    VDG= "#295549"
 
    
     empty_person = {
@@ -161,7 +163,7 @@ async def main(page: ft.Page):
         await asyncio.sleep(0.5)
         screen.jump_to(0)
         screen.play()
-        await asyncio.sleep(7.08)
+        await asyncio.sleep(7.3)
         current_view.content = page_9
         current_view.update()   
     def m(e):
@@ -182,9 +184,20 @@ async def main(page: ft.Page):
         camtype= getcamera(tp)
         if camtype:
            await camera.initialize(camtype[0], flet_camera.ResolutionPreset.VERY_HIGH, enable_audio=False)
-
-         
-
+        orderofmp.controls.reverse()
+        orderofmp.update()
+    async def takepic(e):
+        photoholder[0]= await camera.take_picture()
+        preview.src= photoholder[0]
+        current_view.content= page_12
+        current_view.update()
+    async def AGAIN(e):
+        orderofmp.controls.reverse()
+        orderofmp.update()
+        if current_view.content== page_12:
+                            current_view.content= page_11
+                            current_view.update()
+        
 
 
 
@@ -196,6 +209,8 @@ async def main(page: ft.Page):
 
 #WIDGETS
 
+
+#PAGE1:
     circle = ft.Container(
         width=100,
         height=100,
@@ -215,6 +230,45 @@ async def main(page: ft.Page):
         right=-80
 
     )
+    circle_1o1= ft.Container(
+            width=240,
+            height=240,
+            border= ft.Border.all(color= LG, width=2),
+            border_radius=ft.BorderRadius.all(400),
+            opacity=1,
+            top=680,
+            right=-50
+
+        )
+    circle_2o1= ft.Container(
+                width=50,
+                height=50,
+                border= ft.Border.all(color= LG, width=2),
+                border_radius=ft.BorderRadius.all(400),
+                opacity=1,
+                top=50,
+                left=60
+        
+            )
+    circle_3o1= ft.Container(
+                    width=50,
+                    height=50,
+                    border= ft.Border.all(color= LG, width=2),
+                    border_radius=ft.BorderRadius.all(400),
+                    opacity=1,
+                    top=130,
+                    left=30
+            
+                )
+    circle_4o1= ft.Container(
+                width=240,
+                height=240,
+                border= ft.Border.all(color= LG, width=2),
+                border_radius=ft.BorderRadius.all(400),
+                opacity=1,
+                top=680,
+                left=-50)
+    
     square_1= ft.Container(
         width=400,
         height=850,
@@ -222,7 +276,12 @@ async def main(page: ft.Page):
         border_radius=ft.BorderRadius.all(0),
         opacity=1,
         top=250,
-        bottom=50
+        bottom=50,
+        shadow= ft.BoxShadow(
+                spread_radius=1,
+                blur_radius=15,
+                color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
+                offset=ft.Offset(0, 5),),
     )
     logo= ft.Image(
         src="Vale Logo (4).png",
@@ -256,7 +315,7 @@ async def main(page: ft.Page):
     )
     instruc= ft.Text(
         " Enter your email and password:",
-        weight=ft.FontWeight.BOLD,
+        weight=ft.FontWeight.NORMAL,
         color=DG,
         top=320,
         left=93
@@ -291,7 +350,8 @@ async def main(page: ft.Page):
             top=360,
             left=50,
             width=300,
-            height=40
+            height=40,
+            
         )
           
    
@@ -305,7 +365,7 @@ async def main(page: ft.Page):
              border_radius=ft.BorderRadius.all(30),
              border_color="transparent",
              content_padding= ft.Padding.symmetric(horizontal=20, vertical=0),
-             top=405,
+             top=410,
              left=50,
              width=300,
              height=40
@@ -320,12 +380,76 @@ async def main(page: ft.Page):
                  border_radius=ft.BorderRadius.all(30),
                  border_color="transparent",
                  content_padding= ft.Padding.symmetric(horizontal=20, vertical=0),
-                 top=405,
+                 top=410,
                  left=50,
                  width=300,
                  height=40
         )
+    connect= ft.Container(
+        width=100,
+        height=80,
+        content= ft.Column(
+            controls=
+            [
+            ft.Icon(ft.Icons.FAMILY_RESTROOM,size=50,color= DDG),
+            ft.Text("Connect", size= 15, color= DDG)
+            ], 
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            alignment = ft.MainAxisAlignment.CENTER,
+            spacing=1,
+
+            
+        )
+    )
+
+    Track= ft.Container(
+            width=100,
+            height=80,
+            
+            content= ft.Column(
+                controls=
+                [
+                ft.Icon(ft.Icons.RESTAURANT,size=50,color= DDG),
+                ft.Text("Track", size= 15, color= DDG)
+                ], 
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                alignment = ft.MainAxisAlignment.CENTER,
+                spacing=1,
     
+                
+            )
+        )
+
+    personalise= ft.Container(
+                width=100,
+                height=80,
+                content= ft.Column(
+                    controls=
+                    [
+                    ft.Icon(ft.Icons.BAR_CHART,size=50,color= DDG),
+                    ft.Text("Tailor", size= 15, color= DDG)
+                    ], 
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    alignment = ft.MainAxisAlignment.CENTER,
+                    spacing=1,
+        
+                    
+                )
+            )
+    ctp= ft.Container(
+        width=400,
+        height=100,
+        top=540,
+        left=35,
+        content= ft.Row(
+        controls=[
+                connect,
+                Track,
+                personalise
+            ],
+            spacing=20
+        )
+    )
 
 #this code must be here
     
@@ -353,13 +477,14 @@ async def main(page: ft.Page):
             current_view.update()
            
 
-
+#page2
     squarelog= ft.Button(
                     content= ft.Text("Log In", color=W,size=20),
                     bgcolor=LG,
                     top=460,
                     left=50,
                     width=300,
+                    elevation=15,
                     height=30,
                     style= ft.ButtonStyle( shape= ft.RoundedRectangleBorder(radius=5)),
                     
@@ -367,8 +492,8 @@ async def main(page: ft.Page):
 
     up=  ft.TextButton(
                     ft.Text("Don't have an account? Sign Up", color=DG, bgcolor="transparent"),
-                    top=485,
-                    left=87,
+                    top=500,
+                    left=90,
                     on_click= gotosignup
                 )
 
@@ -396,6 +521,7 @@ async def main(page: ft.Page):
             top=460,
             left=50,
             width=300,
+            elevation= 15,
             height=30,
             style= ft.ButtonStyle( shape= ft.RoundedRectangleBorder(radius=5)),
             on_click= newacc
@@ -403,8 +529,8 @@ async def main(page: ft.Page):
         )
     log=  ft.TextButton(
                         ft.Text("Already have an account? Log In", color=DG, bgcolor="transparent"),
-                        top=485,
-                        left=87,
+                        top=500,
+                        left=90,
                         on_click=gotologin)
     
     OrS= ft.Text(
@@ -444,11 +570,13 @@ async def main(page: ft.Page):
     )
 
     menu1= ft.Container(
+
          content= ft.Icon(ft.Icons.MENU, color=  W,),
          top=20,
          left=20,
         
     )
+#page3
     circle7 = ft.Container(
             width= 80,
             height=80,
@@ -518,10 +646,11 @@ async def main(page: ft.Page):
         
             )
     nextb= ft.Button(
-        bgcolor="Transparent",
+        bgcolor= ft.Colors.with_opacity(0.4,B),
         top= 500,
         left= 40,
         width= 200,
+        elevation=15,
         height= 50,
          on_click= opensurvey,
         content= ft.Row(
@@ -542,6 +671,7 @@ async def main(page: ft.Page):
                 right=-30
                 )
     circle11= ft.Container(
+
                     width= 90,
                     height= 90,
                     bgcolor=LG,
@@ -549,6 +679,7 @@ async def main(page: ft.Page):
                     top=-10,
                     right=80
                     )
+#Page_4
     Basic= ft.Text(
             "Basic Cohorts",
             size=50,
@@ -672,6 +803,7 @@ async def main(page: ft.Page):
             bgcolor=ft.Colors.with_opacity(0.4, B),
             top= 730,
             left= 100,
+            elevation= 15,
             width= 200,
             height= 50,
             on_click= nextpage,
@@ -935,6 +1067,7 @@ async def main(page: ft.Page):
         left= 40,
         width= 200,
         height= 50,
+        elevation= 15,
         on_click= save_results,
         content= ft.Row(
             controls= [ft.Text("End", size= 30, color= W),
@@ -1014,18 +1147,19 @@ async def main(page: ft.Page):
     )    
     logo2= ft.Image(
         src= ('Vale Logo (5).png'),
-        width=230,
-        height=230,
-        left=75,
+        width=225,
+        height=225,
+        left=80,
         top= 140,
     )
     signlog= ft.Button(
          content= ft.Text("Sign Up/Login", color=W,size=25, weight=ft.FontWeight.W_100),
          bgcolor=ft.Colors.with_opacity(0.4, B),
          top=383,
-         left=60, 
+         left=65, 
          width=270,
          height=50,
+         elevation=15,
          style= ft.ButtonStyle( shape= ft.RoundedRectangleBorder(radius=5)),
          on_click= gotologin
 
@@ -1034,9 +1168,10 @@ async def main(page: ft.Page):
              content= ft.Text("Learn About Vale", color=W,size=25, weight=ft.FontWeight.W_100),
              bgcolor=ft.Colors.with_opacity(0.4, B),
              top=463, 
-             left=60,
+             left=65,
              width=270,
              height=50,
+             elevation= 15,
              on_click= m,
              style= ft.ButtonStyle( shape= ft.RoundedRectangleBorder(radius=5)),
     
@@ -1138,27 +1273,43 @@ async def main(page: ft.Page):
                 top=660,
                 left=100)
     camera= flet_camera.Camera(
-        width=400,
-        height=400,
+        width=350,
+        height=500,
         
 
                                 )
+    tpicture= ft.Button(
+            icon= ft.Icon(ft.Icons.PHOTO, color= W),
+            bgcolor= ft.Colors.with_opacity(0.4,VDG),
+            width=50,
+            height=50,
+            top=500,
+            left= 180,
+            on_click=takepic
+        )
     camera1= ft.Container(
                     width=350,
                     height=500,
                     top=70,
                     left=30,
-                    content= camera,
+                    content= ft.Stack(
+                        controls=[
+                            camera,
+                        ],
+
+                    ),
                     border_radius=ft.BorderRadius.all(10),
             )
     cambutton= ft.Button(
+        elevation=35,
         content= ft.Text("Take A Photo", color= W,size=20),
         width=200,
         height=50,
-        top=600,
+        top=590,
         left=105,
-        bgcolor= "Transparent",
+        bgcolor= ft.Colors.with_opacity(0.6, B), 
         on_click= opencam,
+        
 
     )
     food= flet_video.Video(
@@ -1176,13 +1327,71 @@ async def main(page: ft.Page):
                 content=food,
                 bgcolor= "#437769",
                 border_radius=ft.BorderRadius.all(10),
+                shadow= ft.BoxShadow(
+                                            spread_radius=1,
+                                            blur_radius=15,
+                                            color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
+                                            offset=ft.Offset(0, 5),),
         )              
+    done= ft.Text(
+            "Done!",
+            size=70,
+            weight=ft.FontWeight.BOLD,
+            color=W,
+            top=170,
+            left=40
+        )
+    all= ft.Text(
+            "All",
+            size=70,
+            weight=ft.FontWeight.BOLD,
+            color=W,
+            top=100,
+            left=45
+    
+        )
+    photoholder= [None]
+    preview= ft.Image(
+        src= "",
+        width=350,
+        height=500,
+        fit=ft.BoxFit.COVER
+    )
+    previewhold= ft.Container(
+                    width=350,
+                    height=500,
+                    top=70,
+                    left=25,
+                    content=preview,
+                    bgcolor= "#437769",
+                    border_radius=ft.BorderRadius.all(10),
+                    shadow= ft.BoxShadow(
+                                                spread_radius=1,
+                                                blur_radius=15,
+                                                color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
+                                                offset=ft.Offset(0, 5),),
+            )        
+    redo= ft.IconButton(
+        icon= ft.Icons.REDO,
+        icon_color= W,
+        icon_size= 30,
+        bgcolor= DG,
+        width=80, 
+        height=80,
+        top= 600,
+        left=40,
+        on_click= AGAIN,
 
 
-
-
-
-
+    )
+    orderofmp= ft.Stack(
+        controls=[
+        tpicture,
+        camera1,
+        camera2
+        ]
+        
+    )
     
     
     
@@ -1190,6 +1399,25 @@ async def main(page: ft.Page):
 
 
 #PAGES
+    page_12= ft.Container(          
+                                    width=400,
+                                    height=850,
+                                    bgcolor=VDG,
+                                    border_radius=ft.BorderRadius.all(35),
+            
+                
+                                    content=ft.Stack(
+                                            controls=[
+                                            ft.Container(
+                                            width=400,
+                                    height=850,
+                                    bgcolor=VDG,
+                                    border_radius=ft.BorderRadius.all(35),
+                                    ),
+                                    previewhold,
+                                    redo,
+                                    
+                                    ]))
     page_11= ft.Container(          
                                     width=400,
                                     height=850,
@@ -1205,10 +1433,9 @@ async def main(page: ft.Page):
                                     bgcolor=DG,
                                     border_radius=ft.BorderRadius.all(35),
                                     ),
-                                    camera2,
-                                    cambutton,
+                                    orderofmp,
                                     menu1,
-                                    camera1,
+                                    cambutton,
                                     
                                     ]))
     page_10= ft.Container(width=400,
@@ -1266,8 +1493,8 @@ async def main(page: ft.Page):
                                     circle7,
                                     circle8,
                                     circle9,
-                                    surv,
-                                    v,
+                                    done,
+                                    all,
                                     end,
                                     circle10,
                                     circle11,
@@ -1440,8 +1667,10 @@ async def main(page: ft.Page):
                                     info,
                                     info22,
                                     squaresign,
-                                    log
-                                    
+                                    log,
+                                    ctp,
+                                    circle_1o1,
+                                    circle_2o1
                     
                                     ]
                                 
@@ -1474,8 +1703,11 @@ async def main(page: ft.Page):
                   instruc,
                   info,
                   info2,
+                  squarelog,
                   up,
-                  squarelog
+                  ctp,
+                  circle_4o1,
+                  circle_3o1
                   
 
                   
@@ -1528,7 +1760,7 @@ async def main(page: ft.Page):
     current_view = ft.Container(
            width=400, height=850, bgcolor=LG,
            border_radius=ft.BorderRadius.all(35),
-           content=page_0,
+           content=page_11,
            offset=ft.Offset(0,0)
     )
 
@@ -1536,7 +1768,6 @@ async def main(page: ft.Page):
 
     outer_stack = ft.Stack(
         controls=[
-            page_3,
             current_view
         ]
     )
@@ -1547,5 +1778,5 @@ ft.app(target=main, view=ft.AppView.WEB_BROWSER)
 #python -c "import sys; from flet.cli import main; sys.argv = ['flet', 'run', 'Untitled-1.py', '--web']; main()"
 #Remove-Item family_data.json        
 #To do list :
-# Create survey.
 # Fix page_10 because when I checked it on an actual phone a lot of the key widgets are not aligned/ not aesthetic
+# Scratch that, all of the pages have widgets that are not aligned, only noticed this when testing the app on a phone
