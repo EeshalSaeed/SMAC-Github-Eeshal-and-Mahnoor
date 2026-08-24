@@ -1166,7 +1166,7 @@ async def main(page: ft.Page):
             muted=True,
             width=400,
             height=840,
-            fill_color= DDG,
+            fill_color= DG,
             on_complete=ahh
             
            
@@ -1439,51 +1439,97 @@ async def main(page: ft.Page):
         
     )
 #MAIN PAGEINTERFACE
+    #CALORIES:
     caloriering= ft.ProgressRing(
-        value= 0.0,
-        width=160,
-        height= 160,
-        left= 100,
-        top=100,
-        stroke_width= 14,
-        color= DG,
-        bgcolor= VDG,
+        value= 0.3,
+        width=93,
+        height= 93,
+        stroke_width= 10,
+        color=LG,
+        bgcolor= W,
     ) 
-    calnum = ft.Text(0, size=28, weight=ft.FontWeight.BOLD, color=DDG)
-    callabel = ft.Text("kcal left", size=12, color="#6C7A6D")
-    ringdisplay = ft.Stack(
-        alignment=ft.Alignment(0, 0), 
-        controls=[
-            caloriering,
-            ft.Column(
-                alignment=ft.MainAxisAlignment.CENTER,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=0,
-                controls=[calnum, callabel]
-            )
-        ]
-    )
-    pl= ft.Text("Protein: 0/--g", size=14,color= W, weight= ft.FontWeight.BOLD)
-    fl= ft.Text("Fats: 0/--g", size=14,color= W, weight= ft.FontWeight.BOLD)
-    sl= ft.Text(": Sugar 0/--g", size=14,color= W, weight= ft.FontWeight.BOLD)
-    prl= ft.Text("Processed Foods Limit: 0/--g", size=14,color= W, weight= ft.FontWeight.BOLD)
-    foodgroups = ft.Container(
-        width=330,
-        height=140,
-        bgcolor=ft.Colors.with_opacity(0.4, B),
-        border_radius=ft.BorderRadius.all(10),
-        padding=15,
-        content=ft.Column(
+    bgring1= ft.Container(
+        width=93,
+        border_radius= 200,
+        height= 93,
+        bgcolor= W,
+    ) 
+    calnum = ft.Text("0%", size=18, weight=ft.FontWeight.BOLD, color=DG)
+    callabel = ft.Text("kcal left", size=12, color=DG)
+    ringdisplay = ft.Container(
+        border=ft.Border.all(width=2, color=W),
+        border_radius=200,
+        width=100,
+        height=100,
+        left=100,
+        top=100,
+        alignment= ft.Alignment(0,0),
+        content= ft.Stack(
             controls=[
-                ft.Text("Your Daily Targets", size=16, weight=ft.FontWeight.BOLD, color=W),
-                pl,
-                fl,
-                sl,
-                prl,
-            ],
-            spacing=5
-        )    
-    )      
+                        bgring1,
+                        caloriering,
+                        ft.Column(
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                            spacing=0,
+                            controls=[ calnum, callabel]
+                        ),
+                        
+                    ],
+                    alignment= ft.Alignment(0,0)
+        )
+
+        
+    )
+
+    #PROTEIN:
+    proteinring= ft.ProgressRing(
+            value= 0.3,
+            width=93,
+            height= 93,
+            stroke_width= 10,
+            color=LG,
+            bgcolor= W,
+        ) 
+    bgring2= ft.Container(
+            width=93,
+            border_radius= 200,
+            height= 93,
+            bgcolor= W,
+        ) 
+    
+    pl= ft.Text("""Protein(g)
+    0/--g""", size=14,color= DG, weight= ft.FontWeight.BOLD)
+    ringdisplay2 = ft.Container(
+            border=ft.Border.all(width=2, color=W),
+            border_radius=200,
+            width=100,
+            height=100,
+            left=200,
+            top=100,
+            alignment= ft.Alignment(0,0),
+            content= ft.Stack(
+                controls=[
+                            bgring2,
+                            proteinring,
+                            pl,
+                            
+                            
+                        ],
+                        alignment= ft.Alignment(0,0)
+            )
+    
+            
+        )
+    
+    
+    fl= ft.Text("""Fats(g) 
+ 0/--g""", size=14,color= W, weight= ft.FontWeight.BOLD)
+    sl= ft.Text("""Sugar(g) 
+  0/--g""", size=14,color= W, weight= ft.FontWeight.BOLD)
+    prl= ft.Text("""Carbohydrates:
+        0/--g""", size=14,color= W, weight= ft.FontWeight.BOLD)
+    
     calorie= {
         "target":2000,
         "consumed":0,
@@ -1503,7 +1549,7 @@ async def main(page: ft.Page):
             pl.value = f"Protein: {groups.get('proteing','0','/' '--')}g"
             fl.value = f"Fats: {groups.get('fatsg','0','/' '--')}g"
             sl.value = f"Sugars: {groups.get('sugarsg','0','/' '--')}g"
-            prl.value = f"Processed Foods Limit: {groups.get('processedfoodsservings','0','/' '--')} servings"
+            prl.value = f"Processed Foods Limit: {groups.get('processedfoodsservings','0','/' '--')}g"
             
 
             try:
@@ -1518,18 +1564,19 @@ async def main(page: ft.Page):
         consumed = calorie["consumed"]
         finalprogress = min(1.0, consumed / target) if target > 0 else 0.0
         remainingcals = max(0, target - consumed)
+        percentage= consumed/target
 
         await asyncio.sleep(0.1)
         
         caloriering.value = finalprogress
-        calnum.value = str(remainingcals)
+        calnum.value = str(percentage+"%")
         
         try:
             caloriering.update()
             calnum.update()
         except Exception:
             pass
-
+    
 #PAGES
     page_13 = ft.Container(          
         width=400,
@@ -1539,8 +1586,8 @@ async def main(page: ft.Page):
         content=ft.Stack(
             controls=[
                 ft.Container(width=400, height=850, bgcolor=DG, border_radius=ft.BorderRadius.all(35)),
-                ft.Container(top=80, left=35, content=ringdisplay),
-                ft.Container(top=320, left=35, content=foodgroups)
+                ringdisplay,
+                ringdisplay2
             ]
         )
     )
@@ -1908,7 +1955,7 @@ async def main(page: ft.Page):
     current_view = ft.Container(
            width=400, height=850, bgcolor=LG,
            border_radius=ft.BorderRadius.all(35),
-           content=page_1,
+           content=page_0,
            offset=ft.Offset(0,0)
     )
 
