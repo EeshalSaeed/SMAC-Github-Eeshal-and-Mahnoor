@@ -1,3 +1,4 @@
+
 import asyncio
 from tkinter import NORMAL
 from turtle import done
@@ -13,6 +14,7 @@ import random
 async def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    #page.scroll = ft.ScrollMode.AUTO,
 
     LG = "#97CE8B"
     DG = "#5ca38f"
@@ -41,7 +43,8 @@ async def main(page: ft.Page):
             },
         },
         "ai_recommendations": {
-            "daily_calorie_target": None,
+            "dailycalorietarget": (),
+
             "food_group_targets": {},
         },
         "calendar": {},
@@ -199,6 +202,16 @@ async def main(page: ft.Page):
                             current_view.content= page_11
                             current_view.update()
 
+    def  aisugg(profiledata):
+        return {
+            "dailycalorietarget":(random.randint(1500, 2500)),
+            "foodgrouptargets": {
+                "proteing": random.randint(40, 130),
+                "fatsg": random.randint(40, 90),
+                "sugarsg": random.randint(20, 50),
+                "processedfoodsservings": random.randint(0, 3),
+        }
+    }
         
 
 
@@ -1061,8 +1074,17 @@ async def main(page: ft.Page):
         information['profile']['family_history']['conditions_other']= history_other.value
         information['profile']['family_history']['affected_members']= filtercblabels([cb_grandparents, cb_parents, cb_siblings, cb_na, cb_uncles_aunts])
         information['profile']['family_history']['affected_members_other']= fami_other.value
+        
+        generated_targets= aisugg(information['profile'])
+        information['ai_recommendations']['dailycalorietarget'] = generated_targets["dailycalorietarget"]
+        information['ai_recommendations']['foodgrouptargets'] = generated_targets["foodgrouptargets"]
         save_family()
+        asyncio.create_task(updatemanui())
+        current_view.content = page_13
+        current_view.update()
+
         print(information)
+
 
                     
     End= ft.Button(
@@ -1410,19 +1432,118 @@ async def main(page: ft.Page):
         )
     orderofmp= ft.Stack(
         controls=[
-        tpicture,
+        tpicture, 
         camera1,
         foodisplay
         ]
         
     )
-    
-    
-    
-               
+#MAIN PAGEINTERFACE
+    caloriering= ft.ProgressRing(
+        value= 0.0,
+        width=160,
+        height= 160,
+        left= 100,
+        top=100,
+        stroke_width= 14,
+        color= DG,
+        bgcolor= VDG,
+    ) 
+    calnum = ft.Text(0, size=28, weight=ft.FontWeight.BOLD, color=DDG)
+    callabel = ft.Text("kcal left", size=12, color="#6C7A6D")
+    ringdisplay = ft.Stack(
+        alignment=ft.Alignment(0, 0), 
+        controls=[
+            caloriering,
+            ft.Column(
+                alignment=ft.MainAxisAlignment.CENTER,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=0,
+                controls=[calnum, callabel]
+            )
+        ]
+    )
+    pl= ft.Text("Protein: 0/--g", size=14,color= W, weight= ft.FontWeight.BOLD)
+    fl= ft.Text("Fats: 0/--g", size=14,color= W, weight= ft.FontWeight.BOLD)
+    sl= ft.Text(": Sugar 0/--g", size=14,color= W, weight= ft.FontWeight.BOLD)
+    prl= ft.Text("Processed Foods Limit: 0/--g", size=14,color= W, weight= ft.FontWeight.BOLD)
+    foodgroups = ft.Container(
+        width=330,
+        height=140,
+        bgcolor=ft.Colors.with_opacity(0.4, B),
+        border_radius=ft.BorderRadius.all(10),
+        padding=15,
+        content=ft.Column(
+            controls=[
+                ft.Text("Your Daily Targets", size=16, weight=ft.FontWeight.BOLD, color=W),
+                pl,
+                fl,
+                sl,
+                prl,
+            ],
+            spacing=5
+        )    
+    )      
+    calorie= {
+        "target":2000,
+        "consumed":0,
+    }
+    async def updatemanui():
+        if current_user[0] and current_member[0]:
+            udata = family[current_user[0]]['members'][current_member[0]]
+            
+           
+            airecs = udata.get("ai_recommendations", {})
+            target = airecs.get("dailycalorietarget")
+            if not target:
+                target = 2000
+            calorie['target'] = target  
+            
+            groups = airecs.get('foodgrouptargets', {})
+            pl.value = f"Protein: {groups.get('proteing','0','/' '--')}g"
+            fl.value = f"Fats: {groups.get('fatsg','0','/' '--')}g"
+            sl.value = f"Sugars: {groups.get('sugarsg','0','/' '--')}g"
+            prl.value = f"Processed Foods Limit: {groups.get('processedfoodsservings','0','/' '--')} servings"
+            
 
+            try:
+                pl.update()
+                fl.update()
+                sl.update()
+                prl.update()
+            except Exception:
+                pass
+
+        target = calorie["target"]
+        consumed = calorie["consumed"]
+        finalprogress = min(1.0, consumed / target) if target > 0 else 0.0
+        remainingcals = max(0, target - consumed)
+
+        await asyncio.sleep(0.1)
+        
+        caloriering.value = finalprogress
+        calnum.value = str(remainingcals)
+        
+        try:
+            caloriering.update()
+            calnum.update()
+        except Exception:
+            pass
 
 #PAGES
+    page_13 = ft.Container(          
+        width=400,
+        height=850,
+        bgcolor=DG,
+        border_radius=ft.BorderRadius.all(35),
+        content=ft.Stack(
+            controls=[
+                ft.Container(width=400, height=850, bgcolor=DG, border_radius=ft.BorderRadius.all(35)),
+                ft.Container(top=80, left=35, content=ringdisplay),
+                ft.Container(top=320, left=35, content=foodgroups)
+            ]
+        )
+    )
     page_12= ft.Container(          
                                     width=400,
                                     height=850,
@@ -1435,7 +1556,7 @@ async def main(page: ft.Page):
                                             ft.Container(
                                             width=400,
                                     height=850,
-                                    bgcolor=VDG,
+                                    bgcolor=DG,
                                     border_radius=ft.BorderRadius.all(35),
                                     ),
                                     previewhold,
@@ -1787,7 +1908,7 @@ async def main(page: ft.Page):
     current_view = ft.Container(
            width=400, height=850, bgcolor=LG,
            border_radius=ft.BorderRadius.all(35),
-           content=page_11,
+           content=page_1,
            offset=ft.Offset(0,0)
     )
 
