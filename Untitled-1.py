@@ -1,6 +1,6 @@
 
 import asyncio
-from tkinter import NORMAL
+from tkinter import CENTER, NORMAL
 from turtle import done
 from cv2 import FILLED, repeat
 import flet as ft
@@ -209,12 +209,13 @@ async def main(page: ft.Page):
                 "proteing": random.randint(40, 130),
                 "fatsg": random.randint(40, 90),
                 "sugarsg": random.randint(20, 50),
-                "processedfoodsservings": random.randint(0, 3),
+                "carbsg": random.randint(40, 500),
         }
     }
-        
-
-
+   
+                
+  
+                
 
 
 
@@ -584,11 +585,14 @@ async def main(page: ft.Page):
     
     )
 
-    menu1= ft.Container(
-
-         content= ft.Icon(ft.Icons.MENU, color=  W,),
-         top=20,
-         left=20,
+    menu1= ft.IconButton(
+        width=50,
+        height=50,
+        icon= ft.Icons.MENU,
+        icon_size= 35,
+        icon_color= W,
+        top=23,
+        right=10,
         
     )
 #page3
@@ -1166,7 +1170,7 @@ async def main(page: ft.Page):
             muted=True,
             width=400,
             height=840,
-            fill_color= DG,
+            fill_color= DDG,
             on_complete=ahh
             
            
@@ -1438,31 +1442,31 @@ async def main(page: ft.Page):
         ]
         
     )
+    
 #MAIN PAGEINTERFACE
     #CALORIES:
+    cl= ft.Text("""Calories: \n  0/--kcal""", size=34,color= W, weight= ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER)
     caloriering= ft.ProgressRing(
-        value= 0.3,
+        value= 0.0,
         width=93,
         height= 93,
         stroke_width= 10,
-        color=LG,
-        bgcolor= W,
+        color=W,
+        bgcolor= LG,
     ) 
     bgring1= ft.Container(
         width=93,
         border_radius= 200,
         height= 93,
-        bgcolor= W,
+        bgcolor= LG,
     ) 
-    calnum = ft.Text("0%", size=18, weight=ft.FontWeight.BOLD, color=DG)
-    callabel = ft.Text("kcal left", size=12, color=DG)
+    calnum = ft.Text("0.0%", size=18, weight=ft.FontWeight.BOLD, color=W)
+    callabel = ft.Text("kcal eaten", size=12, color=W)
     ringdisplay = ft.Container(
-        border=ft.Border.all(width=2, color=W),
+        border=ft.Border.all(width=6, color=W),
         border_radius=200,
         width=100,
         height=100,
-        left=100,
-        top=100,
         alignment= ft.Alignment(0,0),
         content= ft.Stack(
             controls=[
@@ -1484,35 +1488,38 @@ async def main(page: ft.Page):
 
     #PROTEIN:
     proteinring= ft.ProgressRing(
-            value= 0.3,
+            value= 0.0,
             width=93,
             height= 93,
             stroke_width= 10,
-            color=LG,
-            bgcolor= W,
+            color=W,
+            bgcolor=DG,
         ) 
     bgring2= ft.Container(
             width=93,
             border_radius= 200,
             height= 93,
-            bgcolor= W,
+            bgcolor= DG,
         ) 
     
-    pl= ft.Text("""Protein(g)
-    0/--g""", size=14,color= DG, weight= ft.FontWeight.BOLD)
+    pl= ft.Text("""Protein: \n 0/--g""", size=34,color= W, weight= ft.FontWeight.BOLD,text_align=ft.TextAlign.CENTER)
+    pronum= ft.Text("0.0%", size=18,color=W, weight= ft.FontWeight.BOLD)
+    protein= {
+            "target3":0,
+            "consumed3":0,
+        }        
     ringdisplay2 = ft.Container(
-            border=ft.Border.all(width=2, color=W),
+
+            border=ft.Border.all(width=6, color=W),
             border_radius=200,
             width=100,
             height=100,
-            left=200,
-            top=100,
             alignment= ft.Alignment(0,0),
             content= ft.Stack(
                 controls=[
                             bgring2,
                             proteinring,
-                            pl,
+                            pronum,
                             
                             
                         ],
@@ -1521,17 +1528,361 @@ async def main(page: ft.Page):
     
             
         )
+
+
+
     
+    #FATS:
+    fatring= ft.ProgressRing(
+                value= 0.0,
+                width=93,
+                height= 93,
+                stroke_width= 10,
+                color=LG,
+                bgcolor= LG,
+            ) 
+    bgring3= ft.Container(
+                width=93,
+                border_radius= 200,
+                height= 93,
+                bgcolor= LG,
+            ) 
+    fat= {
+            "target2":0,
+            "consumed2":0,
+        }
+    fatnum= ft.Text("0.0%", size=18,color=W, weight= ft.FontWeight.BOLD)
+        
+    fl= ft.Text("Fats: \n 0/--g", size=34,color=W, weight= ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER)
+    ringdisplay3 = ft.Container( border=ft.Border.all(width=6, color=W),
+                border_radius=200,
+                width=100,
+                height=100,
+                alignment= ft.Alignment(0,0),
+                content= ft.Stack(
+                    controls=[
+                                bgring3,
+                                fatring,
+                                fatnum,
+                                
+                                
+                            ],
+                            alignment= ft.Alignment(0,0)
+                )
+        
+                
+            )
+
     
-    fl= ft.Text("""Fats(g) 
- 0/--g""", size=14,color= W, weight= ft.FontWeight.BOLD)
-    sl= ft.Text("""Sugar(g) 
-  0/--g""", size=14,color= W, weight= ft.FontWeight.BOLD)
-    prl= ft.Text("""Carbohydrates:
-        0/--g""", size=14,color= W, weight= ft.FontWeight.BOLD)
+    #SUGAR:
+    sugring= ft.ProgressRing(
+                    value= 0.0,
+                    width=93,
+                    height= 93,
+                    stroke_width= 10,
+                    color=W,
+                    bgcolor=DG,
+                ) 
+    bgring4= ft.Container(
+                    width=93,
+                    border_radius= 200,
+                    height= 93,
+                    bgcolor= DG,
+                ) 
+    sl= ft.Text("Sugar: \n 0/--g", size=34,color= W, weight= ft.FontWeight.BOLD,text_align=ft.TextAlign.CENTER)
+    sugnum= ft.Text("0.0%", size=18,color= W, weight= ft.FontWeight.BOLD)
+    ringdisplay4 = ft.Container( border=ft.Border.all(width=6, color=W),
+                    border_radius=200,
+                    width=100,
+                    height=100,
+                    alignment= ft.Alignment(0,0),
+                    content= ft.Stack(
+                        controls=[
+                                    bgring4,
+                                    sugring,
+                                    sugnum,
+                                    
+                                    
+                                ],
+                                alignment= ft.Alignment(0,0)
+                    )
+            
+                    
+                )
+    
+    sugar= {
+            "target4":0,
+            "consumed4":0,
+        }
+
+
+
+
+    #CARBOHYDRATES
+    carring= ft.ProgressRing(
+                        value= 0.0,
+                        width=93,
+                        height= 93,
+                        stroke_width= 10,
+                        color=W,
+                        bgcolor= LG,
+                    ) 
+    bgring5= ft.Container(
+                        width=93,
+                        border_radius= 200,
+                        height= 93,
+                        bgcolor= LG,
+                    ) 
+    c= ft.Text("""Carbs: \n 0/--g""", size=34,color= W, weight= ft.FontWeight.BOLD,text_align=ft.TextAlign.CENTER)
+    carnum= ft.Text("0.0%", size=18,color= W, weight= ft.FontWeight.BOLD)
+    ringdisplay5 = ft.Container( border=ft.Border.all(width=6, color=W),
+                                
+                        border_radius=200,
+                        width=100,
+                        height=100,
+                        alignment= ft.Alignment(0,0),
+                        content= ft.Stack(
+                            controls=[
+                                        bgring5,
+                                        carring,
+                                        carnum,
+                                        
+                                        
+                                    ],
+                                    alignment= ft.Alignment(0,0)
+                        )
+                
+                        
+                    )
+    carbs= {
+            "target5":0,
+            "consumed5":0,
+        }
+    #OTHER ELEMENTS
+    decor = ft.Container(
+        width=450,
+        height=450,
+        border_radius=200, 
+        right= -20,
+        top=200,
+        gradient=ft.RadialGradient(
+            center=ft.Alignment(0, 0),
+            radius=0.5,
+            colors=[
+                LG,
+                DG, 
+            ],
+        )
+    )
+    maintext= ft.Text(
+        "Vale - Stay Healthy",
+        color= W,
+        size=25,
+        top=30,
+        left=20,
+        weight= ft.FontWeight.BOLD,
+    )
+    tinylogo = ft.Container(
+        width=40,
+        height=40,
+        top=29,
+        left=300,
+        content=ft.Image(
+            src="Vale Logo (5).png",
+            width=50,
+            height=50,
+            fit="contain"
+        ),
+        on_click=lambda e: print("Logo clicked"),
+        ink=True 
+    )
+
+    nutrition= ft.IconButton(
+            bgcolor= VDG,
+            icon_size=40,
+            icon_color= W,
+            icon= ft.Icons.RESTAURANT,
+    
+        )
+    addmembers= ft.IconButton(
+                bgcolor= "transparent",
+                icon_size=40,
+                icon_color= W,
+                icon= ft.Icons.FAMILY_RESTROOM,
+        
+            )
+    health= ft.IconButton(
+                    bgcolor= "transparent",
+                    icon_size=40,
+                    icon_color= W,
+                    icon= ft.Icons.MONITOR_HEART,
+            
+                )
+    cam= ft.IconButton( 
+                        bgcolor= "transparent",
+                        icon_size=40,
+                        icon_color= W,
+                        icon= ft.Icons.CAMERA_ALT,
+                
+                    )
+    photo= ft.IconButton(
+                            bgcolor= "transparent",
+                            icon_size=40,
+                            icon_color= W,
+                            icon= ft.Icons.PHOTO,
+                    
+                        )  
+    travel= ft.Container(
+        height= 60,
+        width=360,
+        top=100,
+        left=20,
+        bgcolor= "transparent",
+        border_radius= 10,
+        border=ft.Border.all(width=2, color=W),
+        content= 
+            ft.Row(
+            controls=[
+            
+            nutrition,
+            addmembers,
+            health,
+            cam,
+            photo,
+            ],
+            spacing=20,
+            alignment = ft.Alignment.CENTER,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER
+        ),
+
+        
+    )
+    nutritiontitle= ft.Text(
+        "Nutrition",
+        size=18,
+        color= W,
+        top=180,
+        left=20
+
+    )
+    nutritioninfo= ft.Text(
+        " This part of Vale shows how much of each food group you \n should be consuming daily based on your age requirements, \n activity levels and family history. This information has been \n tailored for you based on recent research.",
+        size= 12,
+        color=W,
+        top=210,
+        left=18
+    )
+    display= ft.Container(
+        width= 360,
+        height=120,
+        bgcolor= "#99295549",
+        top=300,
+        left=20,
+        padding=ft.Padding.only(left=20, right=20),
+        border_radius= 20,
+        content=
+            ft.Row(
+                controls=[
+                    ringdisplay,
+                    cl,
+                    
+                ],
+                spacing= 50,
+                alignment = ft.Alignment.CENTER,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER
+            )
+
+    )
+    display2= ft.Container(
+            width= 360,
+            height=120,
+            bgcolor= "#99295549",
+            top=440,
+            left=20,
+            padding=ft.Padding.only(left=70, right=20),
+            border_radius= 20,
+            content=
+                ft.Row(
+                    controls=[
+                        pl,
+                        ringdisplay2,
+                        
+                    ],
+                    spacing=50,
+                    alignment = ft.Alignment.CENTER,
+                    vertical_alignment=ft.CrossAxisAlignment.CENTER
+                )
+    
+        )
+    display3= ft.Container(
+                width= 360,
+                height=120,
+                bgcolor= "#99295549",
+                top=580,
+                left=20,
+                padding=ft.Padding.only(left=20, right=70),
+                border_radius= 20,
+                content=
+                    ft.Row(
+                        controls=[
+                            ringdisplay3,
+                            fl,
+                            
+                        ],
+                        spacing=70,
+                        alignment = ft.Alignment.CENTER,
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER
+                    )
+        
+            )
+    display4= ft.Container(
+                    width= 360,
+                    height=120,
+                    bgcolor= "#99295549",
+                    top=720,
+                    left=20,
+                    padding=ft.Padding.only(left=70, right=20),
+                    border_radius= 20,
+                    content=
+                        ft.Row(
+                            controls=[
+                                sl,
+                                ringdisplay4,
+                                
+                            ],
+                            spacing=70,
+                            alignment = ft.Alignment.CENTER,
+                            vertical_alignment=ft.CrossAxisAlignment.CENTER
+                        )
+            
+                )
+    display5= ft.Container(
+                        width= 360,
+                        height=120,
+                        bgcolor= "#99295549",
+                        top=860,
+                        left=20,
+                        padding=ft.Padding.only(left=20, right=70),
+                        border_radius= 20,
+                        content=
+                            ft.Row(
+                                controls=[
+                                    ringdisplay5,
+                                    c,
+                                    
+                                ],
+                                spacing=50,
+                                alignment = ft.Alignment.CENTER,
+                                vertical_alignment=ft.CrossAxisAlignment.CENTER
+                            )
+                
+                    )
+    
+
+
     
     calorie= {
-        "target":2000,
+        "target":0,
         "consumed":0,
     }
     async def updatemanui():
@@ -1540,40 +1891,82 @@ async def main(page: ft.Page):
             
            
             airecs = udata.get("ai_recommendations", {})
-            target = airecs.get("dailycalorietarget")
-            if not target:
-                target = 2000
-            calorie['target'] = target  
+           
+            
+
+
+
+
             
             groups = airecs.get('foodgrouptargets', {})
-            pl.value = f"Protein: {groups.get('proteing','0','/' '--')}g"
-            fl.value = f"Fats: {groups.get('fatsg','0','/' '--')}g"
-            sl.value = f"Sugars: {groups.get('sugarsg','0','/' '--')}g"
-            prl.value = f"Processed Foods Limit: {groups.get('processedfoodsservings','0','/' '--')}g"
+            target = airecs.get("dailycalorietarget")
+            target3= groups.get("proteing")
+            target4= groups.get("sugarg")
+            target2= groups.get("fatg")
+            target5= groups.get("carbsg")
+            
+            pl.value = f"Protein:\n{groups.get('proteing', '0/--')}g"
+            fl.value = f"Fats:\n{groups.get('fatsg', '0/--')}g"
+            sl.value = f"Sugars:\n{groups.get('sugarsg', '0/--')}g"
+            c.value = f"Carbs:\n{groups.get('Carbs:', '0/--')}g"
+            cl.value= f"Calories: \n{groups.get('Calories:',"0/--")}kcal"
+
+            
+            if not target:
+                        target = 2000
+            calorie['target'] = target  
+            fat["target2"]= target2
+            protein["target3"]= target3
+            sugar["target4"]= target4
+            carbs["target5"]= target5
             
 
             try:
                 pl.update()
                 fl.update()
                 sl.update()
-                prl.update()
+                c.update()
+                cl.update()
             except Exception:
                 pass
 
         target = calorie["target"]
         consumed = calorie["consumed"]
+        target2= fat["target2"]
+        consumed2= fat['consumed2']
+        target3= protein['target3']
+        consumed3= protein['consumed3']
+        target4= sugar['target4']
+        consumed4= sugar['consumed4']
+        target5= carbs['target5']
+        consumed5= carbs['consumed5']
+
         finalprogress = min(1.0, consumed / target) if target > 0 else 0.0
         remainingcals = max(0, target - consumed)
-        percentage= consumed/target
+        calpercentage= ((consumed/target)*100)
+        fatpercentage=((consumed2/target2)*100)
+        propercentage=((consumed3/target3)*100)
+        sugpercentage=((consumed4/target4)*100)
+
 
         await asyncio.sleep(0.1)
         
         caloriering.value = finalprogress
-        calnum.value = str(percentage+"%")
+        calnum.value = f"{calpercentage}%"
+        fatnum.value= f'{fatpercentage}%'
+        pronum.value= f'{propercentage}%'
+        sugnum.value= f'{sugpercentage}%'
+                
+
+        
         
         try:
             caloriering.update()
             calnum.update()
+            fatnum.update()
+            pronum.update()
+            sugnum.update()
+            
         except Exception:
             pass
     
@@ -1582,12 +1975,35 @@ async def main(page: ft.Page):
         width=400,
         height=850,
         bgcolor=DG,
+        padding= ft.Padding(0),
         border_radius=ft.BorderRadius.all(35),
-        content=ft.Stack(
+        content=ft.ListView(
+            expand=True,
             controls=[
-                ft.Container(width=400, height=850, bgcolor=DG, border_radius=ft.BorderRadius.all(35)),
-                ringdisplay,
-                ringdisplay2
+                ft.Container(width=400,height=1000,bgcolor=DG, border_radius=ft.BorderRadius.all(35),content=
+                             ft.Stack(
+                                      controls=[
+                decor,
+                #ringdisplay,
+                #ringdisplay2,
+                #ringdisplay3,
+                #ringdisplay4,
+                #ringdisplay5,
+                maintext,
+                tinylogo,
+                menu1,
+                travel,
+                nutritiontitle,
+                nutritioninfo,
+                display,
+                display2,
+                display3,
+                display4,
+                display5,
+                                      ],
+                             ),
+
+                )
             ]
         )
     )
@@ -1609,7 +2025,8 @@ async def main(page: ft.Page):
                                     previewhold,
                                     redo,
                                     send,
-                                    menu1
+                                    menu1,
+                                    
                                     
                                     ]))
     page_11= ft.Container(          
@@ -1667,7 +2084,7 @@ async def main(page: ft.Page):
                         content= screen,
                         width=400,
                         height=850,
-                        bgcolor=DG,
+                        bgcolor=DDG,
                         border_radius=ft.BorderRadius.all(35),
                                     )
 
@@ -1902,8 +2319,7 @@ async def main(page: ft.Page):
                   up,
                   ctp,
                   circle_4o1,
-                  circle_3o1
-                  
+                  circle_3o1,
 
                   
                   
@@ -1917,10 +2333,9 @@ async def main(page: ft.Page):
     
     )
                   
-            
+   
     
     
-
     
 
     
@@ -1955,7 +2370,7 @@ async def main(page: ft.Page):
     current_view = ft.Container(
            width=400, height=850, bgcolor=LG,
            border_radius=ft.BorderRadius.all(35),
-           content=page_0,
+           content=page_1,
            offset=ft.Offset(0,0)
     )
 
