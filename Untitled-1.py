@@ -1,8 +1,4 @@
-
 import asyncio
-from tkinter import CENTER, NORMAL
-from turtle import done
-from cv2 import FILLED, repeat
 import flet as ft
 import copy
 import json
@@ -15,6 +11,7 @@ async def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     #page.scroll = ft.ScrollMode.AUTO,
+    page.window.full_screen= True
 
     LG = "#97CE8B"
     DG = "#5ca38f"
@@ -43,7 +40,7 @@ async def main(page: ft.Page):
             },
         },
         "ai_recommendations": {
-            "dailycalorietarget": (),
+            "dailycalorietarget": 0,
 
             "food_group_targets": {},
         },
@@ -96,9 +93,9 @@ async def main(page: ft.Page):
            info2.password= False 
            vis[0]= True
          else:
-             eye1.content= ft.Icon(ft.Icons.VISIBILITY, color= W)
-             info2.password= True
-             vis[0]= False
+              eye1.content= ft.Icon(ft.Icons.VISIBILITY, color= W)
+              info2.password= True
+              vis[0]= False
          eye1.update(
         )
          info2.update()
@@ -112,9 +109,9 @@ async def main(page: ft.Page):
                info22.password= False 
                fiz[0]= True
              else:
-                 eye2.content= ft.Icon(ft.Icons.VISIBILITY, color= W)
-                 info22.password= True
-                 fiz[0]= False
+                  eye2.content= ft.Icon(ft.Icons.VISIBILITY, color= W)
+                  info22.password= True
+                  fiz[0]= False
              eye2.update(
             )
              info22.update()
@@ -190,6 +187,8 @@ async def main(page: ft.Page):
            await camera.initialize(camtype[0], flet_camera.ResolutionPreset.VERY_HIGH, enable_audio=False)
         orderofmp.controls.reverse()
         orderofmp.update()
+        page_11.content.controls.remove(cambutton)
+        page_11.update()
     async def takepic(e):
         photoholder[0]= await camera.take_picture()
         preview.src= photoholder[0]
@@ -201,6 +200,23 @@ async def main(page: ft.Page):
         if current_view.content== page_12:
                             current_view.content= page_11
                             current_view.update()
+                            page_11.content.controls.append(cambutton)
+                            page_11.update()
+        if nutrition.bgcolor== VDG or photo.bgcolor== VDG or addmembers.bgcolor== VDG or health.bgcolor==VDG:
+            nutrition.bgcolor= "transparent" 
+            nutrition.update()
+            photo.bgcolor= "transparent"
+            photo.update()
+            addmembers.bgcolor= "transparent"
+            addmembers.update()
+            health.bgcolor= 'transparent'
+            health.update()
+            cam.bgcolor= VDG
+            cam.update()
+                         
+    
+    
+                
 
     def  aisugg(profiledata):
         return {
@@ -212,7 +228,24 @@ async def main(page: ft.Page):
                 "carbsg": random.randint(40, 500),
         }
     }
-   
+    def PHOTOTIME(e):
+            current_view.content= page_11
+            current_view.update()
+            nutrition.bgcolor= "transparent"
+            nutrition.update()
+            cam.bgcolor= VDG
+            cam.update()
+    def NUTRITIONNTIME(e):
+                   current_view.content= page_13
+                   current_view.update()
+                   nutrition.bgcolor= VDG
+                   nutrition.update()
+                   cam.bgcolor= "transaprent"
+                   cam.update()
+    
+          
+                 
+
                 
   
                 
@@ -369,37 +402,37 @@ async def main(page: ft.Page):
             height=40,
             
         )
-          
+         
    
     info2 = ft.TextField(
-             hint_text="Password",
-             prefix_icon=ft.Icon(ft.Icons.LOCK, color=W), 
-             bgcolor=DG,
-             suffix_icon= eye1,
-             color=W,
-             hint_style=ft.TextStyle(color=W),
-             border_radius=ft.BorderRadius.all(30),
-             border_color="transparent",
-             content_padding= ft.Padding.symmetric(horizontal=20, vertical=0),
-             top=410,
-             left=50,
-             width=300,
-             height=40
+               hint_text="Password",
+               prefix_icon=ft.Icon(ft.Icons.LOCK, color=W), 
+               bgcolor=DG,
+               suffix_icon= eye1,
+               color=W,
+               hint_style=ft.TextStyle(color=W),
+               border_radius=ft.BorderRadius.all(30),
+               border_color="transparent",
+               content_padding= ft.Padding.symmetric(horizontal=20, vertical=0),
+               top=410,
+               left=50,
+               width=300,
+               height=40
     )
     info22 = ft.TextField(
-                 hint_text="Password",
-                 prefix_icon=ft.Icon(ft.Icons.LOCK, color=W), 
-                 bgcolor=DG,
-                 suffix_icon= eye2,
-                 color=W,
-                 hint_style=ft.TextStyle(color=W),
-                 border_radius=ft.BorderRadius.all(30),
-                 border_color="transparent",
-                 content_padding= ft.Padding.symmetric(horizontal=20, vertical=0),
-                 top=410,
-                 left=50,
-                 width=300,
-                 height=40
+                   hint_text="Password",
+                   prefix_icon=ft.Icon(ft.Icons.LOCK, color=W), 
+                   bgcolor=DG,
+                   suffix_icon= eye2,
+                   color=W,
+                   hint_style=ft.TextStyle(color=W),
+                   border_radius=ft.BorderRadius.all(30),
+                   border_color="transparent",
+                   content_padding= ft.Padding.symmetric(horizontal=20, vertical=0),
+                   top=410,
+                   left=50,
+                   width=300,
+                   height=40
         )
     connect= ft.Container(
         width=100,
@@ -491,7 +524,7 @@ async def main(page: ft.Page):
 
             current_view.content= page_3
             current_view.update()
-           
+            
 
 #page2
     squarelog= ft.Button(
@@ -516,7 +549,6 @@ async def main(page: ft.Page):
     
     
     
-   
 
     
 
@@ -678,7 +710,7 @@ async def main(page: ft.Page):
                    ], 
                    alignment = ft.MainAxisAlignment.CENTER,
                    spacing=8,
-       
+        
         
         ))
     circle10= ft.Container(
@@ -725,10 +757,10 @@ async def main(page: ft.Page):
         top= 180,
         left=35,
         shadow=ft.BoxShadow(
-                    spread_radius=1,
-                    blur_radius=15,
-                    color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
-                    offset=ft.Offset(0, 5),),
+                spread_radius=1,
+                blur_radius=15,
+                color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
+                offset=ft.Offset(0, 5),),
         border_radius=ft.BorderRadius.all(5),
         content= ft.Stack(
         controls=[
@@ -891,10 +923,10 @@ async def main(page: ft.Page):
                 top= 260,
                 left=35,
                 shadow=ft.BoxShadow(
-                                                spread_radius=1,
-                                                blur_radius=15,
-                                                color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
-                                                offset=ft.Offset(0, 5),),
+                                            spread_radius=1,
+                                            blur_radius=15,
+                                            color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
+                                            offset=ft.Offset(0, 5),),
                 border_radius=ft.BorderRadius.all(5),
                 content= ft.Stack(
                 controls=[
@@ -1059,7 +1091,7 @@ async def main(page: ft.Page):
     )            
     #function:
     def filtercblabels(cblabels):
-        chosen=[]              
+        chosen=[]             
         for i in cblabels:
            if i.value:
              chosen. append(i.label)    
@@ -1207,12 +1239,12 @@ async def main(page: ft.Page):
     
         )
     learn1= ft.Text(
-        "Learn About Vale",
+        "Learn About Vale!",
         weight= ft.FontWeight.BOLD,
         size=44,
         color=W,
         top=60,
-        left=45
+        left=40
        
     )
     team= ft.Text(
@@ -1221,7 +1253,7 @@ async def main(page: ft.Page):
         size=30,
         color=W,
         top= 150,
-        left=135
+        left=130
     )
     
     tn1= ft.Container(
@@ -1249,7 +1281,7 @@ async def main(page: ft.Page):
         size=15,
         color=W,
         top=310,
-        left=55
+        left=65
     )
     MS= ft.Text(
             "Mahnoor Saeed",
@@ -1257,7 +1289,7 @@ async def main(page: ft.Page):
             size=15,
             color=W,
             top=310,
-            left=237
+            left=245
         )
     wdwd= ft.Text(
         "What Do We Do?",
@@ -1265,11 +1297,11 @@ async def main(page: ft.Page):
         size=30,
         color=W,
         top= 370,
-        left=95
+        left=95,
     )
     vl= ft.Text(
         "The wave crashed and hit the sandcastle head-on. " \
-        "The sandcastle began to melt under the waves force "
+        "The sandcastle began to melt under the waves force " \
         "and as the wave receded, half the sandcastle was gone. " \
         "The next wave hit, not quite as strong, but still managed to " \
         "cover the remains of the sandcastle and take more of it away. Tever existed.",
@@ -1308,13 +1340,13 @@ async def main(page: ft.Page):
         height=500,
         
 
-                                )
+                            )
     tpicture= ft.IconButton(
-            icon= ft.Icon(ft.Icons.PHOTO, color= W),
+            icon= ft.Icon(ft.Icons.CAMERA_ALT, color=W),
             bgcolor= ft.Colors.with_opacity(0.4,VDG),
             width=50,
             height=50,
-            top=500,
+            top=640,
             animate_scale =ft.Animation(300, ft.AnimationCurve.EASE_IN_OUT),
             left= 180,
             on_click=takepic
@@ -1322,7 +1354,7 @@ async def main(page: ft.Page):
     camera1= ft.Container(
                     width=350,
                     height=500,
-                    top=70,
+                    top=200,
                     left=25,
                     shadow= ft.BoxShadow(
                             spread_radius=1,
@@ -1342,7 +1374,7 @@ async def main(page: ft.Page):
         content= ft.Text("Take A Photo", color= W,size=20),
         width=200,
         height=50,
-        top=590,
+        top=740,
         left=95,
         bgcolor= ft.Colors.with_opacity(0.6, B), 
         on_click= opencam,
@@ -1359,17 +1391,18 @@ async def main(page: ft.Page):
     foodisplay= ft.Container(
                 width=350,
                 height=500,
-                top=70,
+                top=200,
                 left=25,
                 content=food,
                 bgcolor= "#437769",
                 border_radius=ft.BorderRadius.all(10),
                 shadow= ft.BoxShadow(
-                                            spread_radius=1,
-                                            blur_radius=15,
-                                            color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
-                                            offset=ft.Offset(0, 5),),
-        )              
+                                                        spread_radius=1,
+                                                        blur_radius=15,
+                                                        color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
+                                                        offset=ft.Offset(0, 5),),
+              
+        )                 
     done= ft.Text(
             "Done!",
             size=70,
@@ -1404,10 +1437,10 @@ async def main(page: ft.Page):
                     bgcolor= "#437769",
                     border_radius=ft.BorderRadius.all(10),
                     shadow= ft.BoxShadow(
-                                                spread_radius=1,
-                                                blur_radius=15,
-                                                color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
-                                                offset=ft.Offset(0, 5),),
+                                            spread_radius=1,
+                                            blur_radius=15,
+                                            color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
+                                            offset=ft.Offset(0, 5),),
             )        
     redo= ft.IconButton(
         icon= ft.Icons.REDO,
@@ -1442,6 +1475,21 @@ async def main(page: ft.Page):
         ]
         
     )
+    square2= ft.Container(
+        width=330,
+        height=210,
+        left=32,
+        top=360,
+        bgcolor= "#99295549",
+        border_radius= 10,
+        shadow= ft.BoxShadow(
+                        spread_radius=1,
+                        blur_radius=15,
+                        color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
+                        offset=ft.Offset(0, 5),)
+
+    )
+
     
 #MAIN PAGEINTERFACE
     #CALORIES:
@@ -1702,6 +1750,7 @@ async def main(page: ft.Page):
             icon_size=40,
             icon_color= W,
             icon= ft.Icons.RESTAURANT,
+            on_click= NUTRITIONNTIME,
     
         )
     addmembers= ft.IconButton(
@@ -1718,11 +1767,12 @@ async def main(page: ft.Page):
                     icon= ft.Icons.MONITOR_HEART,
             
                 )
-    cam= ft.IconButton( 
+    cam= ft.IconButton(                        
                         bgcolor= "transparent",
                         icon_size=40,
                         icon_color= W,
                         icon= ft.Icons.CAMERA_ALT,
+                        on_click= PHOTOTIME,
                 
                     )
     photo= ft.IconButton(
@@ -1778,7 +1828,7 @@ async def main(page: ft.Page):
         bgcolor= "#99295549",
         top=300,
         left=20,
-        padding=ft.Padding.only(left=20, right=20),
+        padding=ft.Padding.only(left=20, right=70),
         border_radius= 20,
         content=
             ft.Row(
@@ -1787,7 +1837,7 @@ async def main(page: ft.Page):
                     cl,
                     
                 ],
-                spacing= 50,
+                spacing= 40,
                 alignment = ft.Alignment.CENTER,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER
             )
@@ -1854,7 +1904,7 @@ async def main(page: ft.Page):
                             alignment = ft.Alignment.CENTER,
                             vertical_alignment=ft.CrossAxisAlignment.CENTER
                         )
-            
+        
                 )
     display5= ft.Container(
                         width= 360,
@@ -1871,11 +1921,11 @@ async def main(page: ft.Page):
                                     c,
                                     
                                 ],
-                                spacing=50,
+                                spacing=70,
                                 alignment = ft.Alignment.CENTER,
                                 vertical_alignment=ft.CrossAxisAlignment.CENTER
                             )
-                
+        
                     )
     
 
@@ -1889,37 +1939,29 @@ async def main(page: ft.Page):
         if current_user[0] and current_member[0]:
             udata = family[current_user[0]]['members'][current_member[0]]
             
-           
             airecs = udata.get("ai_recommendations", {})
-           
-            
-
-
-
-
-            
             groups = airecs.get('foodgrouptargets', {})
-            target = airecs.get("dailycalorietarget")
-            target3= groups.get("proteing")
-            target4= groups.get("sugarg")
-            target2= groups.get("fatg")
-            target5= groups.get("carbsg")
             
-            pl.value = f"Protein:\n{groups.get('proteing', '0/--')}g"
-            fl.value = f"Fats:\n{groups.get('fatsg', '0/--')}g"
-            sl.value = f"Sugars:\n{groups.get('sugarsg', '0/--')}g"
-            c.value = f"Carbs:\n{groups.get('Carbs:', '0/--')}g"
-            cl.value= f"Calories: \n{groups.get('Calories:',"0/--")}kcal"
-
+            target = airecs.get("dailycalorietarget")
+            target3 = groups.get("proteing", 0)
+            target4 = groups.get("sugarg", 0)
+            target2 = groups.get("fatsg", 0)
+            target5 = groups.get("carbsg", 0)
             
             if not target:
-                        target = 2000
+                target = 2000
+
             calorie['target'] = target  
-            fat["target2"]= target2
-            protein["target3"]= target3
-            sugar["target4"]= target4
-            carbs["target5"]= target5
+            fat["target2"] = target2
+            protein["target3"] = target3
+            sugar["target4"] = target4
+            carbs["target5"] = target5
             
+            pl.value = f"Protein:\n{protein['consumed3']}/{target3}g"
+            fl.value = f"Fats:\n{fat['consumed2']}/{target2}g"
+            sl.value = f"Sugars:\n{sugar['consumed4']}/{target4}g"
+            c.value = f"Carbs:\n{carbs['consumed5']}/{target5}g"
+            cl.value = f"Calories:\n{calorie['consumed']}/{target}kcal"
 
             try:
                 pl.update()
@@ -1932,44 +1974,37 @@ async def main(page: ft.Page):
 
         target = calorie["target"]
         consumed = calorie["consumed"]
-        target2= fat["target2"]
-        consumed2= fat['consumed2']
-        target3= protein['target3']
-        consumed3= protein['consumed3']
-        target4= sugar['target4']
-        consumed4= sugar['consumed4']
-        target5= carbs['target5']
-        consumed5= carbs['consumed5']
+        target2 = fat["target2"]
+        consumed2 = fat['consumed2']
+        target3 = protein['target3']
+        consumed3 = protein['consumed3']
+        target4 = sugar['target4']
+        consumed4 = sugar['consumed4']
+        target5 = carbs['target5']
+        consumed5 = carbs['consumed5']
 
         finalprogress = min(1.0, consumed / target) if target > 0 else 0.0
-        remainingcals = max(0, target - consumed)
-        calpercentage= ((consumed/target)*100)
-        fatpercentage=((consumed2/target2)*100)
-        propercentage=((consumed3/target3)*100)
-        sugpercentage=((consumed4/target4)*100)
-
+        calpercentage = ((consumed / target) * 100) if target > 0 else 0.0
+        fatpercentage = ((consumed2 / target2) * 100) if target2 and target2 > 0 else 0.0
+        propercentage = ((consumed3 / target3) * 100) if target3 and target3 > 0 else 0.0
+        sugpercentage = ((consumed4 / target4) * 100) if target4 and target4 > 0 else 0.0
 
         await asyncio.sleep(0.1)
         
         caloriering.value = finalprogress
-        calnum.value = f"{calpercentage}%"
-        fatnum.value= f'{fatpercentage}%'
-        pronum.value= f'{propercentage}%'
-        sugnum.value= f'{sugpercentage}%'
+        calnum.value = f"{calpercentage:.1f}%"
+        fatnum.value = f'{fatpercentage:.1f}%'
+        pronum.value = f'{propercentage:.1f}%'
+        sugnum.value = f'{sugpercentage:.1f}%'
                 
-
-        
-        
         try:
             caloriering.update()
             calnum.update()
             fatnum.update()
             pronum.update()
             sugnum.update()
-            
         except Exception:
             pass
-    
 #PAGES
     page_13 = ft.Container(          
         width=400,
@@ -1981,14 +2016,9 @@ async def main(page: ft.Page):
             expand=True,
             controls=[
                 ft.Container(width=400,height=1000,bgcolor=DG, border_radius=ft.BorderRadius.all(35),content=
-                             ft.Stack(
-                                      controls=[
+                           ft.Stack(
+                                     controls=[
                 decor,
-                #ringdisplay,
-                #ringdisplay2,
-                #ringdisplay3,
-                #ringdisplay4,
-                #ringdisplay5,
                 maintext,
                 tinylogo,
                 menu1,
@@ -2000,14 +2030,14 @@ async def main(page: ft.Page):
                 display3,
                 display4,
                 display5,
-                                      ],
-                             ),
+                                     ],
+                           ),
 
                 )
             ]
         )
     )
-    page_12= ft.Container(          
+    page_12= ft.Container(                           
                                     width=400,
                                     height=850,
                                     bgcolor=VDG,
@@ -2019,16 +2049,16 @@ async def main(page: ft.Page):
                                             ft.Container(
                                             width=400,
                                     height=850,
-                                    bgcolor=DG,
+                                    bgcolor=VDG,
                                     border_radius=ft.BorderRadius.all(35),
-                                    ),
-                                    previewhold,
-                                    redo,
-                                    send,
-                                    menu1,
-                                    
-                                    
-                                    ]))
+                                            ),
+                                            previewhold,
+                                            redo,
+                                            send,
+                                            menu1,
+                                            
+                                            
+                                            ]))
     page_11= ft.Container(          
                                     width=400,
                                     height=850,
@@ -2043,17 +2073,21 @@ async def main(page: ft.Page):
                                     height=850,
                                     bgcolor=DG,
                                     border_radius=ft.BorderRadius.all(35),
-                                    ),
-                                    orderofmp,
-                                    menu1,
-                                    cambutton,
-                                    
-                                    ]))
+                                            ),
+                                            decor,
+                                            maintext,
+                                            tinylogo,
+                                            menu1,
+                                            travel,
+                                            orderofmp,
+                                            menu1,
+                                            cambutton,
+                                            
+                                            ]))
     page_10= ft.Container(width=400,
                                     height=850,
                                     bgcolor=DG,
                                     border_radius=ft.BorderRadius.all(35),
-            
                 
                                     content=ft.Stack(
                                             controls=[
@@ -2062,23 +2096,24 @@ async def main(page: ft.Page):
                                     height=850,
                                     bgcolor=DG,
                                     border_radius=ft.BorderRadius.all(35),
-                                    ),
-                                    circle6,
-                                    circle,
-                                    circle8,
-                                    circle12,
-                                    learn1,
-                                    tn1,
-                                    team,
-                                    ES,
-                                    MS,
-                                    wdwd,
-                                    vl,
-                                    b,
-                                    circle_1o1,
-                                   
-                                    
-                                    ]))
+                                            ),
+                                            circle6,
+                                            circle,
+                                            circle8,
+                                            circle12,
+                                            square2,
+                                            learn1,
+                                            tn1,
+                                            team,
+                                            ES,
+                                            MS,
+                                            wdwd,
+                                            vl,
+                                            b,
+                                            circle_1o1,
+                                            
+                                            
+                                            ]))
     
     page_0= ft.Container(
                         content= screen,
@@ -2101,23 +2136,23 @@ async def main(page: ft.Page):
                                     height=850,
                                     bgcolor=DG,
                                     border_radius=ft.BorderRadius.all(35),
-                                    ),
-                                    circle7,
-                                    circle8,
-                                    circle9,
-                                    done,
-                                    all,
-                                    end,
-                                    circle10,
-                                    circle11,
-                                    End,
-                                     ]))
+                                            ),
+                                            circle7,
+                                            circle8,
+                                            circle9,
+                                            done,
+                                            all,
+                                            end,
+                                            circle10,
+                                            circle11,
+                                            End,
+                                             ]))
     page_6= ft.Container(width=400,
                                 height=850,
                                 bgcolor=DG,
                                 border_radius=ft.BorderRadius.all(35),
         
-            
+        
                                 content=ft.Stack(
                                         controls=[
                                         ft.Container(
@@ -2155,12 +2190,11 @@ async def main(page: ft.Page):
                                     height=850,
                                     bgcolor=DDG,
                                     border_radius=ft.BorderRadius.all(35),
-                                    ),
-                                    logo2,
-                                    signlog,
-                                    learn,
-                                    ]))
-
+                                            ),
+                                            logo2,
+                                            signlog,
+                                            learn,
+                                            ]))
 
                             
     page_5= ft.Container(width=400,
@@ -2168,7 +2202,7 @@ async def main(page: ft.Page):
                             bgcolor=DG,
                             border_radius=ft.BorderRadius.all(35),
     
-        
+    
                             content=ft.Stack(
                                     controls=[
                                     ft.Container(
@@ -2191,7 +2225,7 @@ async def main(page: ft.Page):
                             T2,
                             T3
                             ]))
-                         
+                       
     page_4= ft.Container(width=400,
                         height=850,
                         bgcolor=DG,
@@ -2250,7 +2284,7 @@ async def main(page: ft.Page):
 
                         ]))
                         
-                                                       
+                        
 
     
 
@@ -2283,14 +2317,14 @@ async def main(page: ft.Page):
                                     ctp,
                                     circle_1o1,
                                     circle_2o1
-                    
-                                    ]
-                                
-                                )
-                    
+                
+                            ]
                         
                         )
-                                
+                    
+                    
+                    )
+                        
 
     page_1 = ft.Container(
             width=410,
@@ -2306,25 +2340,20 @@ async def main(page: ft.Page):
                     bgcolor=DG,
                     border_radius=ft.BorderRadius.all(35),
                 ),
-                  logo,
-                  circle,
-                  square_1,
-                  circle_1,
-                  circle_3,
-                  Welcome,
-                  instruc,
-                  info,
-                  info2,
-                  squarelog,
-                  up,
-                  ctp,
-                  circle_4o1,
-                  circle_3o1,
-
-                  
-                  
-                  
-                
+                 logo,
+                 circle,
+                 square_1,
+                 circle_1,
+                 circle_3,
+                 Welcome,
+                 instruc,
+                 info,
+                 info2,
+                 squarelog,
+                 up,
+                 ctp,
+                 circle_4o1,
+                 circle_3o1,
 
                 ]
             
@@ -2332,12 +2361,8 @@ async def main(page: ft.Page):
 
     
     )
-                  
+                 
    
-    
-    
-    
-
     
 
 #CODE
@@ -2370,7 +2395,7 @@ async def main(page: ft.Page):
     current_view = ft.Container(
            width=400, height=850, bgcolor=LG,
            border_radius=ft.BorderRadius.all(35),
-           content=page_1,
+           content=page_13,
            offset=ft.Offset(0,0)
     )
 
@@ -2388,7 +2413,7 @@ ft.app(target=main, view=ft.AppView.WEB_BROWSER)
 #python -c "import sys; from flet.cli import main; sys.argv = ['flet', 'run', 'Untitled-1.py', '--web']; main()"
 #this is for a phone:
 #python -c "import sys; from flet.cli import main; sys.argv = ['flet', 'run', 'Untitled-1.py', '--android']; main()"
-#Remove-Item family_data.json        
+#Remove-Item family_data.json         
 #To do list :
 # Fix page_10 because when I checked it on an actual phone a lot of the key widgets are not aligned/ not aesthetic
 # Scratch that, all of the pages have widgets that are not aligned, only noticed this when testing the app on a phone
