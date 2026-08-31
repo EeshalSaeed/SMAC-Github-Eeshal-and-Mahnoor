@@ -1,4 +1,5 @@
 import asyncio
+from tkinter import Y
 import flet as ft
 import copy
 import json
@@ -6,6 +7,9 @@ import os
 import flet_video
 import flet_camera
 import random
+import datetime
+
+
 
 async def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
@@ -24,8 +28,9 @@ async def main(page: ft.Page):
 
    
     empty_person = {
-        "name": "",
+        "username": "",
         "profile": {
+            "name": None,
             "age": None,
             "gender": None,
             "ancestry": None,
@@ -45,6 +50,7 @@ async def main(page: ft.Page):
             "food_group_targets": {},
         },
         "calendar": {},
+        "photos":[],
     }
 
     empty_account = {
@@ -58,6 +64,10 @@ async def main(page: ft.Page):
 
     APP_FOLDER = os.path.dirname(os.path.abspath(__file__))
     DATA_FILE = os.path.join(APP_FOLDER, "family_data.json")
+    PHOTOO_FILE= os.path.join(APP_FOLDER, "photos1")
+    os.makedirs(PHOTOO_FILE, exist_ok= True)
+    page.window.full_screen = True
+
 
     def save_family():
         with open(DATA_FILE, "w") as thef:
@@ -100,7 +110,11 @@ async def main(page: ft.Page):
         )
          info2.update()
          page_1.update()
-
+    def createnewmember(e): 
+        nm = copy.deepcopy(empty_person)
+        nm["profile"]["name"] = namenew_field.value
+        family[current_user[0]]['members'][namenew_field.value] = nm
+        save_family()
     fiz= [False]
     
     def visibility2(e):
@@ -213,9 +227,57 @@ async def main(page: ft.Page):
             health.update()
             cam.bgcolor= VDG
             cam.update()
-                         
-    
-    
+    def photoname():
+        name= datetime.datetime.now()
+        namestr= name.strftime("%S_%M_%d_%m_%Y")
+        return namestr
+            
+
+    def savingphoto(e):
+        
+        saving= family[current_user[0]]["members"][current_member[0]]['photos']
+        
+        pn = photoname()  
+        tired = os.path.join(PHOTOO_FILE, pn + ".jpg")
+        
+        if isinstance(photoholder[0], str) and os.path.exists(photoholder[0]):
+            with open(photoholder[0], "rb") as src, open(tired, "wb") as dst:
+                dst.write(src.read())
+        elif isinstance(photoholder[0], bytes):
+            with open(tired, "wb") as process:
+                process.write(photoholder[0])
+        else:
+            print(f"Unexpected type: {type(photoholder[0])}")
+            return
+            
+        saving.append(pn + ".jpg")
+        orderofmp.controls.reverse()
+        orderofmp.update()
+        page_11.content.controls.append(cambutton)
+        page_11.update() 
+        current_view.content= page_13
+        current_view.update()
+        save_family()
+    def buildgallery(photolist):
+        thumbnails = []
+        for filename in photolist:
+            gallery1= os.path.join(PHOTOO_FILE,filename)
+            with open(gallery1,"rb") as tsrc:
+                imagebytes= tsrc.read()
+            thumbnails.append(ft.Image(imagebytes, 
+                                    width=20,
+                                    height=100,
+                                    fit=ft.BoxFit.COVER ))
+        
+        return thumbnails
+    thumbnails2= []
+    def FINALGALLERY(e):
+                saving= family[current_user[0]]['members'][current_member[0]]['photos']
+                thumbnails2= buildgallery(saving)
+                GALLERY.controls= thumbnails2
+                GALLERY.update()
+                print(saving)
+  
                 
 
     def  aisugg(profiledata):
@@ -233,22 +295,90 @@ async def main(page: ft.Page):
             current_view.update()
             nutrition.bgcolor= "transparent"
             nutrition.update()
+            photo.bgcolor= "transparent"
+            photo.update()
+            addmembers.bgcolor= "transparent"
+            addmembers.update()
+            health.bgcolor= 'transparent'
+            health.update()
             cam.bgcolor= VDG
             cam.update()
     def NUTRITIONNTIME(e):
-                   current_view.content= page_13
-                   current_view.update()
-                   nutrition.bgcolor= VDG
-                   nutrition.update()
-                   cam.bgcolor= "transaprent"
-                   cam.update()
+                    current_view.content= page_13
+                    current_view.update()
+                    nutrition.bgcolor= VDG
+                    nutrition.update()
+                    photo.bgcolor= "transparent"
+                    photo.update()
+                    addmembers.bgcolor= "transparent"
+                    addmembers.update()
+                    health.bgcolor= 'transparent'
+                    health.update()
+                    cam.bgcolor= "transparent"
+                    cam.update()
+    def GALLERYTIME(e):
+                            current_view.content= page_14
+                            current_view.update()
+                            nutrition.bgcolor= "transparent"
+                            nutrition.update()
+                            photo.bgcolor= VDG
+                            photo.update()
+                            addmembers.bgcolor= "transparent"
+                            addmembers.update()
+                            health.bgcolor= 'transparent'
+                            health.update()
+                            cam.bgcolor= "transparent"
+                            cam.update()
+                            FINALGALLERY(None)
+    def FAMILYTIME(e):
+        current_view.content= page_15
+        current_view.update()
+        nutrition.bgcolor= "transparent"
+        nutrition.update()
+        photo.bgcolor= "transaparent"
+        photo.update()
+        addmembers.bgcolor= VDG
+        addmembers.update()
+        health.bgcolor= 'transparent'
+        health.update()
+        cam.bgcolor= "transparent"
+        cam.update()
+    def toggle_menu(e):
+        
+        menu_backdrop.visible = True
+        menu_backdrop.update()
+        menu_backdrop.opacity = 1
+        menu_backdrop.update()
+        menu_panel.offset = ft.Offset(0, 0)
+        menu_panel.update()
+        
+        menu_panel.update()
+
+    def closemenu(e):
+       
+        menu_panel.offset = ft.Offset(-1.5, 0)
+        menu_panel.update()
+        
+       
+        menu_backdrop.opacity = 0
+        menu_backdrop.update()
+        async def hide_bg():
+            await asyncio.sleep(0.3)
+            menu_backdrop.visible = False
+            menu_backdrop.update()
+        asyncio.create_task(hide_bg())
+
+    def navigate_from_menu(target_page):
+        closemenu(None)
+        current_view.content = target_page
+        current_view.update()
+
+   
     
           
-                 
-
+               
                 
   
-                
 
 
 
@@ -500,7 +630,7 @@ async def main(page: ft.Page):
         )
     )
 
-#this code must be here
+#(note to self)this code must be here
     
     def newacc(e):
         if len(info22.value)<6:
@@ -513,7 +643,7 @@ async def main(page: ft.Page):
             new_account['password'] = info22.value
 
             first_member = copy.deepcopy(empty_person)
-            first_member['name'] = info.value
+            first_member['username'] = info.value
             new_account['members'][info.value] = first_member
 
             family[info.value] = new_account
@@ -625,6 +755,7 @@ async def main(page: ft.Page):
         icon_color= W,
         top=23,
         right=10,
+        on_click= toggle_menu
         
     )
 #page3
@@ -756,6 +887,7 @@ async def main(page: ft.Page):
         bgcolor= ft.Colors.with_opacity(0.4,B),
         top= 180,
         left=35,
+        padding=ft.Padding.symmetric(horizontal=10),
         shadow=ft.BoxShadow(
                 spread_radius=1,
                 blur_radius=15,
@@ -788,11 +920,13 @@ async def main(page: ft.Page):
         )
     )
     gender = ft.Container(
+         
         width=330,
         height=140,
         bgcolor=ft.Colors.with_opacity(0.4, B),
         top=260,
         left=35,
+        padding=ft.Padding.symmetric(horizontal=10),
         shadow=ft.BoxShadow(
                 spread_radius=1,
                 blur_radius=15,
@@ -811,6 +945,48 @@ async def main(page: ft.Page):
         ]
 )
     )
+    name_field= ft.TextField(
+               hint_text="Enter your name",
+               hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
+               bgcolor="transparent",
+               color=W,
+               border_color="transparent",
+               top=14,  
+               left=0,
+               width=280,
+               height=45,
+           )
+    
+    name1= ft.Container(
+         width=330,
+                height=60, 
+                bgcolor= ft.Colors.with_opacity(0.4,B),
+                top=  630,
+                left=35,
+                padding=ft.Padding.symmetric(horizontal=10),
+                shadow=ft.BoxShadow(
+                       spread_radius=1,
+                       blur_radius=15,
+                       color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
+                       offset=ft.Offset(0, 5),),
+                border_radius=ft.BorderRadius.all(5),
+                content= ft.Stack(
+                controls=[
+                        ft.Text(
+                        "7. What is your name?",
+                        color=W,
+                        weight=ft.FontWeight.NORMAL,
+                        size=15,
+                        top=5,
+                        left=15,
+                        opacity=1,
+                    ),
+                    name_field,
+                ]
+             ),
+         )
+         
+
 
     ancestry_radio = ft.RadioGroup(
         content=ft.Column(
@@ -831,6 +1007,7 @@ async def main(page: ft.Page):
             height=260,
             bgcolor=ft.Colors.with_opacity(0.4, B),
             top=420,
+            padding=ft.Padding.symmetric(horizontal=10),
             shadow=ft.BoxShadow(
                         spread_radius=1,
                         blur_radius=15,
@@ -884,6 +1061,7 @@ async def main(page: ft.Page):
             bgcolor= ft.Colors.with_opacity(0.4,B),
             top= 180,
             left=35,
+            padding=ft.Padding.symmetric(horizontal=10),
             shadow=ft.BoxShadow(
                                 spread_radius=1,
                                 blur_radius=15,
@@ -922,6 +1100,7 @@ async def main(page: ft.Page):
                 bgcolor= ft.Colors.with_opacity(0.4,B),
                 top= 260,
                 left=35,
+                padding=ft.Padding.symmetric(horizontal=10),
                 shadow=ft.BoxShadow(
                                             spread_radius=1,
                                             blur_radius=15,
@@ -961,6 +1140,7 @@ async def main(page: ft.Page):
             bgcolor=ft.Colors.with_opacity(0.4, B),
             top=340,
             left=35,
+            padding=ft.Padding.symmetric(horizontal=10),
             shadow=ft.BoxShadow(
                         spread_radius=1,
                         blur_radius=15,
@@ -1012,7 +1192,7 @@ async def main(page: ft.Page):
             ft.Column(
             controls=[
                 ft.Text(
-                    "7. Do you have a family history of any of the following conditions?",
+                    "8. Do you have a family history of any of the following conditions?",
                     width=300,
                 ),
             cb_heart,
@@ -1060,7 +1240,7 @@ async def main(page: ft.Page):
                 ft.Column(
                 controls=[
                     ft.Text(
-                        "8. Which of your family members have this condition? (Check all that apply)",
+                        "9. Which of your family members have this condition? (Check all that apply)",
                         width=300,
                     ),
                 cb_grandparents,
@@ -1097,9 +1277,15 @@ async def main(page: ft.Page):
              chosen. append(i.label)    
         return chosen
     
-    def save_results(e):
+    async def save_results(e):
+        current_view.content= page_loading
+        current_view.update()
+
+        await asyncio.sleep(1.3)
+
         information=family[current_user[0]]['members'][current_member[0]]
 
+        information['profile']['name']= name_field.value
         information['profile']['age']= age_field.value
         information['profile']['gender']= gender_radio.value
         information['profile']['ancestry']= ancestry_radio.value  
@@ -1110,16 +1296,26 @@ async def main(page: ft.Page):
         information['profile']['family_history']['conditions_other']= history_other.value
         information['profile']['family_history']['affected_members']= filtercblabels([cb_grandparents, cb_parents, cb_siblings, cb_na, cb_uncles_aunts])
         information['profile']['family_history']['affected_members_other']= fami_other.value
+
+
         
         generated_targets= aisugg(information['profile'])
         information['ai_recommendations']['dailycalorietarget'] = generated_targets["dailycalorietarget"]
         information['ai_recommendations']['foodgrouptargets'] = generated_targets["foodgrouptargets"]
         save_family()
+
+        profile_name_text.value = name_field.value or "User Name"
+        profile_age_text.value = f"Age: {age_field.value or '--'}"
+        profile_height_text.value = f"Height: {height_field.value or '--'}"
+        profile_activity_text.value = f"Activity: {activity_radio.value or '--'}"
+
+ 
+
+
+
         asyncio.create_task(updatemanui())
         current_view.content = page_13
         current_view.update()
-
-        print(information)
 
 
                     
@@ -1397,11 +1593,11 @@ async def main(page: ft.Page):
                 bgcolor= "#437769",
                 border_radius=ft.BorderRadius.all(10),
                 shadow= ft.BoxShadow(
-                                                        spread_radius=1,
-                                                        blur_radius=15,
-                                                        color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
-                                                        offset=ft.Offset(0, 5),),
-              
+                                        spread_radius=1,
+                                        blur_radius=15,
+                                        color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
+                                        offset=ft.Offset(0, 5),),
+            
         )                 
     done= ft.Text(
             "Done!",
@@ -1423,7 +1619,7 @@ async def main(page: ft.Page):
     photoholder= [None]
     preview= ft.Image(
         src= "",
-        #scale=ft.Scale(scale_x=-1, scale_y=1) ,
+        scale=ft.Scale(scale_x=-1, scale_y=1) ,
         width=350,
         height=500,
         fit=ft.BoxFit.COVER
@@ -1464,6 +1660,7 @@ async def main(page: ft.Page):
             height=50,
             top= 600,
             left=310,
+            on_click=savingphoto
     
     
         )
@@ -1483,13 +1680,110 @@ async def main(page: ft.Page):
         bgcolor= "#99295549",
         border_radius= 10,
         shadow= ft.BoxShadow(
-                        spread_radius=1,
-                        blur_radius=15,
-                        color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
-                        offset=ft.Offset(0, 5),)
+                    spread_radius=1,
+                    blur_radius=15,
+                    color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
+                    offset=ft.Offset(0, 5),)
 
     )
+    loading_text = ft.Text("Processing your health profile...", color=W, size=16)
+    loading_ring = ft.ProgressRing(width=40, height=40, stroke_width=4, color=W)
+    menu_backdrop = ft.Container(
+        width=400,
+        height=850,
+        bgcolor=ft.Colors.with_opacity(0.5, B),
+        opacity=0,
+        visible=False,
+        animate_opacity=300,
+        on_click= closemenu,
+        border_radius= 35,
+    )
 
+
+    profile_name_text = ft.Text("User Name", size=20, weight=ft.FontWeight.BOLD, color=W)
+    profile_age_text = ft.Text("Age: --", size=13, color=W)
+    profile_height_text = ft.Text("Height: --", size=13, color=W)
+    profile_activity_text = ft.Text("Activity: --", size=13, color=W)
+    profilewidget = ft.Container(
+        width=360,
+        height=130,
+        bgcolor=VDG,  
+        top=180,
+        left=20,
+        padding=15,
+        border_radius=20,
+        shadow=ft.BoxShadow(
+            spread_radius=1,
+            blur_radius=10,
+            color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
+            offset=ft.Offset(0, 4),
+        ),
+        content=ft.Column(
+            spacing=4,
+            controls=[
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    controls=[
+                        profile_name_text,
+                        ft.Icon(ft.Icons.ACCOUNT_CIRCLE, color=LG, size=30)
+                    ]
+                ),
+                ft.Divider(color=ft.Colors.with_opacity(0.2, W), height=10),
+                ft.Row(
+                    spacing=20,
+                    controls=[
+                        profile_age_text,
+                        profile_height_text,
+                        profile_activity_text,
+                    ]
+                )
+            ]
+        )
+    )
+    addwidget = ft.Container(
+        width=360,
+        height=65,
+        bgcolor=ft.Colors.with_opacity(0.3, VDG),
+        border=ft.Border.all(2, LG),
+        border_radius=15,
+        left= 20,
+        top= 340,
+        alignment=ft.Alignment(0, 0),
+        ink=True,
+        content=ft.Row(
+            alignment=ft.MainAxisAlignment.CENTER,
+            spacing=10,
+            controls=[
+                ft.Icon(ft.Icons.PERSON_ADD_ALT_1, color=W, size=22),
+                ft.Text(
+                    "Add Family Member",
+                    size=16,
+                    weight=ft.FontWeight.BOLD,
+                    color=W
+                )
+            ]
+        )
+    )
+    menu_panel = ft.Container(
+        width=250,
+        height=850,
+        bgcolor=VDG,
+        padding=20,
+        border_radius=35,
+        offset=ft.Offset(-1.5, 0),
+        animate_offset=ft.Animation(300, ft.AnimationCurve.EASE_OUT),
+        content=ft.Column(
+            spacing=20,
+            controls=[
+                ft.Text("Vale Menu", size=22, weight=ft.FontWeight.BOLD, color=W, style=ft.TextStyle(font_family="Roboto")),
+                ft.Divider(color=W),
+                ft.TextButton("Home / Nutrition", on_click=lambda e: navigate_from_menu(page_13),style=ft.ButtonStyle(color= W)),
+                ft.TextButton("Take Photo", on_click=lambda e: navigate_from_menu(page_11), style=ft.ButtonStyle(color= W)),
+                ft.TextButton("Photo Gallery", on_click=lambda e: navigate_from_menu(page_14), style=ft.ButtonStyle(color= W)),
+                ft.TextButton("Log Out", on_click=lambda e: navigate_from_menu(page_1), style=ft.ButtonStyle(color= W)),
+            ]
+        )
+    )
     
 #MAIN PAGEINTERFACE
     #CALORIES:
@@ -1758,6 +2052,7 @@ async def main(page: ft.Page):
                 icon_size=40,
                 icon_color= W,
                 icon= ft.Icons.FAMILY_RESTROOM,
+                on_click= FAMILYTIME
         
             )
     health= ft.IconButton(
@@ -1780,6 +2075,7 @@ async def main(page: ft.Page):
                             icon_size=40,
                             icon_color= W,
                             icon= ft.Icons.PHOTO,
+                            on_click= GALLERYTIME
                     
                         )  
     travel= ft.Container(
@@ -1927,8 +2223,15 @@ async def main(page: ft.Page):
                             )
         
                     )
-    
-
+    GALLERY= ft.GridView(
+         runs_count= 2,
+         controls= thumbnails2,
+         expand=True,
+         top= 200,
+         left=20,
+         width=350,
+         height=700,
+    )
 
     
     calorie= {
@@ -2006,6 +2309,74 @@ async def main(page: ft.Page):
         except Exception:
             pass
 #PAGES
+    page_loading = ft.Container(
+            width=400,
+            height=850,
+            bgcolor=VDG,
+            border_radius=ft.BorderRadius.all(35),
+            alignment=ft.Alignment(0, 0),
+            content=ft.Column(
+                alignment=ft.MainAxisAlignment.CENTER,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=20,
+                controls=[
+                    loading_ring,
+                    loading_text
+                ]
+            )
+        )
+    page_15= ft.Container(
+         width=400,
+                    height=850,
+                    bgcolor=DG,
+                    padding= ft.Padding(0),
+                    border_radius=ft.BorderRadius.all(35),
+                    content=ft.ListView(
+                        expand=True,
+                        controls=[
+                            ft.Container(width=400,height=1000,bgcolor=DG, border_radius=ft.BorderRadius.all(35),content=
+                                   ft.Stack(
+                                             controls=[
+                                decor,
+                                maintext,
+                                tinylogo,
+                                menu1,
+                                travel,
+                                profilewidget,
+                                addwidget,
+                                             ],
+                                   ),
+            
+                            )
+                        ]
+                    )
+               )
+         
+    page_14 = ft.Container(          
+            width=400,
+            height=850,
+            bgcolor=DG,
+            padding= ft.Padding(0),
+            border_radius=ft.BorderRadius.all(35),
+            content=ft.ListView(
+                expand=True,
+                controls=[
+                    ft.Container(width=400,height=1000,bgcolor=DG, border_radius=ft.BorderRadius.all(35),content=
+                               ft.Stack(
+                                          controls=[
+                    decor,
+                    maintext,
+                    tinylogo,
+                    menu1,
+                    travel,
+                    GALLERY,
+                                          ],
+                               ),
+        
+                    )
+                ]
+            )
+        )
     page_13 = ft.Container(          
         width=400,
         height=850,
@@ -2037,7 +2408,7 @@ async def main(page: ft.Page):
             ]
         )
     )
-    page_12= ft.Container(                           
+    page_12= ft.Container(                            
                                     width=400,
                                     height=850,
                                     bgcolor=VDG,
@@ -2088,6 +2459,7 @@ async def main(page: ft.Page):
                                     height=850,
                                     bgcolor=DG,
                                     border_radius=ft.BorderRadius.all(35),
+            
                 
                                     content=ft.Stack(
                                             controls=[
@@ -2223,7 +2595,8 @@ async def main(page: ft.Page):
                             ac,
                             T1,
                             T2,
-                            T3
+                            T3,
+                            name1,
                             ]))
                        
     page_4= ft.Container(width=400,
@@ -2395,7 +2768,7 @@ async def main(page: ft.Page):
     current_view = ft.Container(
            width=400, height=850, bgcolor=LG,
            border_radius=ft.BorderRadius.all(35),
-           content=page_13,
+           content=page_1,
            offset=ft.Offset(0,0)
     )
 
@@ -2403,10 +2776,20 @@ async def main(page: ft.Page):
 
     outer_stack = ft.Stack(
         controls=[
-            current_view
+            current_view,
+            menu_backdrop,
+            menu_panel,
+
         ]
     )
+
+
+
     page.add(outer_stack)
+
+
+
+
 
 
 ft.app(target=main, view=ft.AppView.WEB_BROWSER)
