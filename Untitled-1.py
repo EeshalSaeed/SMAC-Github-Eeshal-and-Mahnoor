@@ -1,3 +1,4 @@
+from argparse import ONE_OR_MORE
 import asyncio
 from tkinter import Y
 from annotated_types import T
@@ -9,6 +10,7 @@ import flet_video
 import flet_camera
 import random
 import datetime
+import calendar
 from ultralytics import YOLO
 from PIL import Image as PILImage
 import io
@@ -28,7 +30,9 @@ async def main(page: ft.Page):
     DDG= "#4c9d86"
     LLG="#8FC682"
     VDG= "#295549"
-
+    WD= "#4CAF50"
+    ON= "#FFC107"
+    T= "#e53e34"
    
     empty_person = {
         "username": "",
@@ -118,7 +122,7 @@ async def main(page: ft.Page):
             family = {}
         return family
     family = load_family()  
-
+    
 
 #CODEWITHDEFINED VARIABLES
     
@@ -292,7 +296,11 @@ async def main(page: ft.Page):
         current_view.update()
         save_family()
 
-    def analyzephoto(e):
+    
+    async def analyzephoto(e):
+        current_view.content = page_loading2
+        current_view.update()
+        await asyncio.sleep(0.1)
         analysis = analyze_food_photo(photoholder[0])
         analysisholder[0] = analysis
         resultimage.src = photoholder[0]
@@ -344,7 +352,8 @@ async def main(page: ft.Page):
             thumbnails.append(ft.Image(imagebytes, 
                                     width=20,
                                     height=100,
-                                    fit=ft.BoxFit.COVER ))
+                                    fit=ft.BoxFit.COVER,
+                                    border_radius= 35, ))
         
         return thumbnails
     thumbnails2= []
@@ -359,8 +368,9 @@ async def main(page: ft.Page):
         today_str = datetime.date.today().strftime("%d_%m_%Y")
         info_data = family[current_user[0]]['members'][current_member[0]]
         info_data['calendar'][today_str] = {
-            "calories": calorie['consumed'], "protein": protein['consumed3'],
-            "fat": fat['consumed2'], "sugar": sugar['consumed4'], "carbs": carbs['consumed5'],
+            "calories": calorie['consumed'], "target": calorie['target'],
+            "protein": protein['consumed3'], "fat": fat['consumed2'],
+            "sugar": sugar['consumed4'], "carbs": carbs['consumed5'],
         }
         calorie['consumed'] = 0
         protein['consumed3'] = 0
@@ -384,8 +394,21 @@ async def main(page: ft.Page):
         return entries
 
     def CALENDARTIME(e):
+        bigcalendar.controls = [build_full_calendar()]
+        nutrition.bgcolor= "transparent"
+        nutrition.update()
+        photo.bgcolor= "transparent"
+        photo.update()
+        addmembers.bgcolor= "transparent"
+        addmembers.update()
+        health.bgcolor= "transparent"
+        health.update()
+        cam.bgcolor= "transparent"
+        cam.update()
+        calender.bgcolor= VDG
+        calender.update()
         calendarlist.controls = buildcalendarlist()
-        current_view.content = page_17
+        current_view.content = page_18
         current_view.update()
 
     def  aisugg(profiledata):
@@ -407,6 +430,8 @@ async def main(page: ft.Page):
             photo.update()
             addmembers.bgcolor= "transparent"
             addmembers.update()
+            calender.bgcolor= "transparent"
+            calender.update()
             health.bgcolor= 'transparent'
             health.update()
             cam.bgcolor= VDG
@@ -422,6 +447,8 @@ async def main(page: ft.Page):
                     addmembers.update()
                     health.bgcolor= 'transparent'
                     health.update()
+                    calender.bgcolor= "transparent"
+                    calender.update()
                     cam.bgcolor= "transparent"
                     cam.update()
     def GALLERYTIME(e):
@@ -431,6 +458,8 @@ async def main(page: ft.Page):
                             nutrition.update()
                             photo.bgcolor= VDG
                             photo.update()
+                            calender.bgcolor= "transparent"
+                            calender.update()
                             addmembers.bgcolor= "transparent"
                             addmembers.update()
                             health.bgcolor= 'transparent'
@@ -449,6 +478,8 @@ async def main(page: ft.Page):
         nutrition.update()
         photo.bgcolor= "transparent"
         photo.update()
+        calender.bgcolor= "transparent"
+        calender.update()
         addmembers.bgcolor= VDG
         addmembers.update()
         health.bgcolor= 'transparent'
@@ -480,6 +511,8 @@ async def main(page: ft.Page):
             menu_backdrop.update()
         asyncio.create_task(hide_bg())
     def navigate_from_menu(target_page):
+        if target_page== page_13:
+            NUTRITIONNTIME(None)
         closemenu(None)
         current_view.content = target_page
         current_view.update()
@@ -515,8 +548,7 @@ async def main(page: ft.Page):
             def switch_member(e, member_name=name):
                 current_member[0] = member_name
                 asyncio.create_task(updatemanui())
-                current_view.content = page_13
-                current_view.update()
+                NUTRITIONNTIME(None)
 
             card = ft.Container(
                 width=360,
@@ -558,7 +590,49 @@ async def main(page: ft.Page):
             else:
                 page_1.content.controls.append(loginwarn)
                 page_1.update()         
-  
+    def get_day_color(pct):
+        if pct is None:
+            return VDG
+        if 85 <= pct <= 115:
+            return WD
+        elif 60 <= pct < 85 or 115 < pct <= 140:
+            return ON
+        else:
+            return T
+
+    def build_month_grid(year, month):
+        info_data = family[current_user[0]]['members'][current_member[0]]
+        weeks = calendar.Calendar(firstweekday=6).monthdayscalendar(year, month)
+        month_name = calendar.month_name[month]
+        week_rows = []
+        for week in weeks:
+            day_cells = []
+            for day in week:
+                if day == 0:
+                    day_cells.append(ft.Container(width=40, height=40))
+                    continue
+                date_str = f"{day:02d}_{month:02d}_{year}"
+                entry = info_data['calendar'].get(date_str)
+                if entry and entry.get("target"):
+                    pct = (entry["calories"] / entry["target"]) * 100
+                else:
+                    pct = None
+                day_cells.append(
+                    ft.Container(
+                        width=40, height=40, bgcolor=get_day_color(pct),
+                        border_radius=8, alignment=ft.Alignment(0, 0),
+                        content=ft.Text(str(day), size=12, color=W),
+                )
+            )
+            week_rows.append(ft.Row(controls=day_cells, spacing=4, alignment=ft.MainAxisAlignment.CENTER))
+        return ft.Column(
+            controls=[ft.Text(f"{month_name} {year}", size=18, weight=ft.FontWeight.BOLD, color=W), *week_rows],
+            spacing=6,
+    )
+
+    def build_full_calendar():
+        year = datetime.date.today().year
+        return ft.Column(controls=[build_month_grid(year, m) for m in range(1, 13)], spacing=25) 
 
 
 
@@ -1878,6 +1952,7 @@ async def main(page: ft.Page):
 
     )
     loading_text = ft.Text("Processing your health profile...", color=W, size=16)
+    loading_text2 = ft.Text("Processing your image...", color=W, size=16)
     loading_ring = ft.ProgressRing(width=40, height=40, stroke_width=4, color=W)
     menu_backdrop = ft.Container(
         width=400,
@@ -2280,7 +2355,6 @@ async def main(page: ft.Page):
                     icon_size=40,
                     icon_color= W,
                     icon= ft.Icons.MONITOR_HEART,
-                    on_click= CALENDARTIME,
             
                 )
     cam= ft.IconButton(                        
@@ -2298,7 +2372,14 @@ async def main(page: ft.Page):
                             icon= ft.Icons.PHOTO,
                             on_click= GALLERYTIME
                     
-                        )  
+                        )
+    calender= ft.IconButton(
+            icon= ft.Icons.CALENDAR_MONTH, 
+            icon_size=40,
+            icon_color= W,
+            bgcolor= "transparent",
+            on_click= CALENDARTIME
+        )
     travel= ft.Container(
         height= 60,
         width=360,
@@ -2316,10 +2397,12 @@ async def main(page: ft.Page):
             health,
             cam,
             photo,
+            calender
             ],
             spacing=20,
             alignment = ft.Alignment.CENTER,
-            vertical_alignment=ft.CrossAxisAlignment.CENTER
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            scroll=ft.ScrollMode.AUTO,
         ),
 
         
@@ -2457,20 +2540,27 @@ async def main(page: ft.Page):
                                             controls=[],
                                             spacing=15)
     calendarlist = ft.Column(controls=[], spacing=15)
-    savedaybutton = ft.Button(bgcolor=ft.Colors.with_opacity(0.4, B), content=ft.Text("Save Day", color=W, size=20), width=200, height=50, elevation=15, on_click=savingday)
+    savedaybutton = ft.Button(bgcolor=ft.Colors.with_opacity(0.4, B),
+                              content=ft.Text("Save Day", color=W, size=20), 
+                              width=200, 
+                              height=50, 
+                              elevation=15, 
+                              on_click=savingday, 
+                              left=100, 
+                              top=1000)
     resultbutton = ft.Button(
         bgcolor=ft.Colors.with_opacity(0.4, B),
         content=ft.Text("Save Result", color=W, size=20),
         width=200, height=50, elevation=15,
-        top=600, left=95,
+        top=700, left=95,
         on_click=saveresult,
     )
     loginwarn = ft.Text(
            "Incorrect email or password.",
            color=P,
            size=12,
-           top=610,
-           left=75
+           top=640,
+           left=125
        )
     calorie= {
         "target":0,
@@ -2546,7 +2636,25 @@ async def main(page: ft.Page):
             sugnum.update()
         except Exception:
             pass
+    bigcalendar = ft.Column(controls=[], spacing=25)
+
 #PAGES
+    page_loading2 = ft.Container(
+                width=400,
+                height=850,
+                bgcolor=VDG,
+                border_radius=ft.BorderRadius.all(35),
+                alignment=ft.Alignment(0, 0),
+                content=ft.Column(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=20,
+                    controls=[
+                        loading_ring,
+                        loading_text2,
+                    ]
+                )
+            )
     page_loading = ft.Container(
             width=400,
             height=850,
@@ -2602,19 +2710,33 @@ async def main(page: ft.Page):
             ]
         )
     )
+    page_18 = ft.Container(          
+                width=400,
+                height=850,
+                bgcolor=DG,
+                padding= ft.Padding(0),
+                border_radius=ft.BorderRadius.all(35),
+                content=ft.ListView(
+                    expand=True,
+                    controls=[
+                        ft.Container(width=400,height=3600,bgcolor=DG, border_radius=ft.BorderRadius.all(35),content=
+                                   ft.Stack(
+                                              controls=[
+                        decor,
+                        maintext,
+                        tinylogo,
+                        menu1,
+                        travel,
+                        ft.Container(top=180, left=20, width=360, content=bigcalendar)
+                                              ],
+                                   ),
             
+                        )
+                    ]
+                )
+            )        
         
     
-    page_17 = ft.Container(
-        width=400, height=850, bgcolor=DG, padding=ft.Padding(0), border_radius=ft.BorderRadius.all(35),
-        content=ft.ListView(expand=True, controls=[
-            ft.Container(width=400, height=1200, bgcolor=DG, border_radius=ft.BorderRadius.all(35),
-                content=ft.Stack(controls=[decor, maintext, tinylogo, menu1, travel,
-                    ft.Container(top=180, left=20, width=360, content=ft.Column(spacing=20, controls=[calendarlist, savedaybutton]))
-                ])
-            )
-        ])
-    )
     page_16 = ft.Container(
         width=400, height=850, bgcolor=VDG, border_radius=ft.BorderRadius.all(35),
         content=ft.Stack(controls=[
@@ -2664,7 +2786,7 @@ async def main(page: ft.Page):
         content=ft.ListView(
             expand=True,
             controls=[
-                ft.Container(width=400,height=1000,bgcolor=DG, border_radius=ft.BorderRadius.all(35),content=
+                ft.Container(width=400,height=1100,bgcolor=DG, border_radius=ft.BorderRadius.all(35),content=
                            ft.Stack(
                                      controls=[
                 decor,
@@ -2679,6 +2801,7 @@ async def main(page: ft.Page):
                 display3,
                 display4,
                 display5,
+                savedaybutton,
                                      ],
                            ),
 
