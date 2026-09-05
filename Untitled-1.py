@@ -1,5 +1,6 @@
 import asyncio
 from tkinter import Y
+from annotated_types import T
 import flet as ft
 import copy
 import json
@@ -8,7 +9,9 @@ import flet_video
 import flet_camera
 import random
 import datetime
-
+from ultralytics import YOLO
+from PIL import Image as PILImage
+import io
 
 
 async def main(page: ft.Page):
@@ -66,6 +69,40 @@ async def main(page: ft.Page):
     DATA_FILE = os.path.join(APP_FOLDER, "family_data.json")
     PHOTOO_FILE= os.path.join(APP_FOLDER, "photos1")
     os.makedirs(PHOTOO_FILE, exist_ok= True)
+
+    FOOD_MODEL = YOLO(os.path.join(APP_FOLDER, "best_updt.pt"))
+
+    NUTRITION_PER_100G = {
+        "Apple": {"calories": 52, "protein": 0.3, "fat": 0.2, "carbs": 14, "sugar": 10},
+        "Banana": {"calories": 89, "protein": 1.1, "fat": 0.3, "carbs": 23, "sugar": 12},
+        "Cabbage": {"calories": 25, "protein": 1.3, "fat": 0.1, "carbs": 6, "sugar": 3},
+        "Carrot": {"calories": 41, "protein": 0.9, "fat": 0.2, "carbs": 10, "sugar": 5},
+        "ChineseCabbage": {"calories": 13, "protein": 1.2, "fat": 0.2, "carbs": 2, "sugar": 1},
+        "Cucumber": {"calories": 15, "protein": 0.7, "fat": 0.1, "carbs": 4, "sugar": 2},
+        "GreenOnion": {"calories": 32, "protein": 1.8, "fat": 0.2, "carbs": 7, "sugar": 2},
+        "GreenPepper": {"calories": 20, "protein": 0.9, "fat": 0.2, "carbs": 5, "sugar": 2},
+        "Lettuce": {"calories": 15, "protein": 1.4, "fat": 0.2, "carbs": 3, "sugar": 1},
+        "MiniTomato": {"calories": 18, "protein": 0.9, "fat": 0.2, "carbs": 4, "sugar": 3},
+        "Onion": {"calories": 40, "protein": 1.1, "fat": 0.1, "carbs": 9, "sugar": 4},
+        "PineApple": {"calories": 50, "protein": 0.5, "fat": 0.1, "carbs": 13, "sugar": 10},
+        "Potato": {"calories": 77, "protein": 2.0, "fat": 0.1, "carbs": 17, "sugar": 1},
+        "Radhish": {"calories": 16, "protein": 0.7, "fat": 0.1, "carbs": 3, "sugar": 2},
+        "Spinach": {"calories": 23, "protein": 2.9, "fat": 0.4, "carbs": 4, "sugar": 0.4},
+        "StrawBerry": {"calories": 32, "protein": 0.7, "fat": 0.3, "carbs": 8, "sugar": 5},
+        "Tomato": {"calories": 18, "protein": 0.9, "fat": 0.2, "carbs": 4, "sugar": 3},
+    }
+
+    def analyze_food_photo(photo_bytes):
+        img = PILImage.open(io.BytesIO(photo_bytes))
+        results = FOOD_MODEL.predict(source=img, verbose=False)
+        detected = sorted({FOOD_MODEL.names[int(box.cls)] for r in results for box in r.boxes})
+        total = {"calories": 0, "protein": 0, "fat": 0, "carbs": 0, "sugar": 0}
+        for food in detected:
+            info = NUTRITION_PER_100G.get(food)
+            if info:
+                for key in total:
+                    total[key] += info[key]
+        return {"detected_foods": detected, "totals": total}
     page.window.full_screen = True
 
 
@@ -110,11 +147,7 @@ async def main(page: ft.Page):
         )
          info2.update()
          page_1.update()
-    def createnewmember(e): 
-        nm = copy.deepcopy(empty_person)
-        nm["profile"]["name"] = namenew_field.value
-        family[current_user[0]]['members'][namenew_field.value] = nm
-        save_family()
+   
     fiz= [False]
     
     def visibility2(e):
@@ -258,6 +291,50 @@ async def main(page: ft.Page):
         current_view.content= page_13
         current_view.update()
         save_family()
+
+    def analyzephoto(e):
+        analysis = analyze_food_photo(photoholder[0])
+        analysisholder[0] = analysis
+        resultimage.src = photoholder[0]
+        foods_text = ", ".join(analysis["detected_foods"]) if analysis["detected_foods"] else "No food detected"
+        resultfoodtext.value = foods_text
+        resultcaltext.value = f"Calories: {analysis['totals']['calories']} kcal"
+        resultprotext.value = f"Protein: {analysis['totals']['protein']}g"
+        resultfattext.value = f"Fat: {analysis['totals']['fat']}g"
+        resultcarbtext.value = f"Carbs: {analysis['totals']['carbs']}g"
+        resultsugartext.value = f"Sugar: {analysis['totals']['sugar']}g"
+        current_view.content = page_16
+        current_view.update()
+
+    def saveresult(e):
+        saving = family[current_user[0]]["members"][current_member[0]]['photos']
+        pn = photoname()
+        tired = os.path.join(PHOTOO_FILE, pn + ".jpg")
+        if isinstance(photoholder[0], str) and os.path.exists(photoholder[0]):
+            with open(photoholder[0], "rb") as src, open(tired, "wb") as dst:
+                dst.write(src.read())
+        elif isinstance(photoholder[0], bytes):
+            with open(tired, "wb") as process:
+                process.write(photoholder[0])
+        saving.append(pn + ".jpg")
+
+        analysis = analysisholder[0]
+        if analysis:
+            calorie['consumed'] += analysis['totals']['calories']
+            protein['consumed3'] += analysis['totals']['protein']
+            fat['consumed2'] += analysis['totals']['fat']
+            sugar['consumed4'] += analysis['totals']['sugar']
+            carbs['consumed5'] += analysis['totals']['carbs']
+
+        orderofmp.controls.reverse()
+        orderofmp.update()
+        page_11.content.controls.append(cambutton)
+        page_11.update()
+        current_view.content = page_13
+        current_view.update()
+        save_family()
+        asyncio.create_task(updatemanui())
+
     def buildgallery(photolist):
         thumbnails = []
         for filename in photolist:
@@ -277,8 +354,39 @@ async def main(page: ft.Page):
                 GALLERY.controls= thumbnails2
                 GALLERY.update()
                 print(saving)
-  
-                
+
+    def savingday(e):
+        today_str = datetime.date.today().strftime("%d_%m_%Y")
+        info_data = family[current_user[0]]['members'][current_member[0]]
+        info_data['calendar'][today_str] = {
+            "calories": calorie['consumed'], "protein": protein['consumed3'],
+            "fat": fat['consumed2'], "sugar": sugar['consumed4'], "carbs": carbs['consumed5'],
+        }
+        calorie['consumed'] = 0
+        protein['consumed3'] = 0
+        fat['consumed2'] = 0
+        sugar['consumed4'] = 0
+        carbs['consumed5'] = 0
+        save_family()
+        asyncio.create_task(updatemanui())
+
+    def buildcalendarlist():
+        entries = []
+        info_data = family[current_user[0]]['members'][current_member[0]]
+        for date_str, stats in sorted(info_data['calendar'].items(), reverse=True):
+            entries.append(ft.Container(
+                width=360, height=80, bgcolor=VDG, padding=10, border_radius=15,
+                content=ft.Column(controls=[
+                    ft.Text(date_str, size=16, weight=ft.FontWeight.BOLD, color=W),
+                    ft.Text(f"Calories: {stats.get('calories',0)}  Protein: {stats.get('protein',0)}g  Fat: {stats.get('fat',0)}g", size=12, color=W),
+                ])
+            ))
+        return entries
+
+    def CALENDARTIME(e):
+        calendarlist.controls = buildcalendarlist()
+        current_view.content = page_17
+        current_view.update()
 
     def  aisugg(profiledata):
         return {
@@ -333,9 +441,13 @@ async def main(page: ft.Page):
     def FAMILYTIME(e):
         current_view.content= page_15
         current_view.update()
+        familycards.controls = []
+        familycards.update()
+        familycards.controls = buildfamilycards()
+        familycards.update()
         nutrition.bgcolor= "transparent"
         nutrition.update()
-        photo.bgcolor= "transaparent"
+        photo.bgcolor= "transparent"
         photo.update()
         addmembers.bgcolor= VDG
         addmembers.update()
@@ -367,17 +479,85 @@ async def main(page: ft.Page):
             menu_backdrop.visible = False
             menu_backdrop.update()
         asyncio.create_task(hide_bg())
-
     def navigate_from_menu(target_page):
         closemenu(None)
         current_view.content = target_page
         current_view.update()
 
-   
-    
-          
-               
-                
+    addingmember= [False]
+    def createnewmember(e): 
+            nm = copy.deepcopy(empty_person)
+            nm["profile"]["name"] = namenew_field.value
+            family[current_user[0]]['members'][namenew_field.value] = nm
+            save_family()
+            current_member[0]= namenew_field.value
+            addingmember[0]= True
+            T1.bgcolor= W
+            T1.border= ft.Border.all(2, W)
+            T1.content= ft.Text("1", color=DG)
+            T1.update()
+            T2.bgcolor= "Transparent"
+            T2.content= ft.Text("2", color=W)
+            T2.update()
+            T3.bgcolor= "Transparent"
+            T3.content= ft.Text('3',color=W)
+            T3.update()
+            current_view.content= page_4
+            current_view.update()
+    def buildfamilycards():
+        cards = []
+        for name, data in family[current_user[0]]['members'].items():
+            card_name_text = ft.Text(data['profile'].get('name') or name, size=20, weight=ft.FontWeight.BOLD, color=W)
+            card_age_text = ft.Text(f"Age: {data['profile'].get('age') or '--'}", size=13, color=W)
+            card_height_text = ft.Text(f"Height: {data['profile'].get('height') or '--'}", size=13, color=W)
+            card_activity_text = ft.Text(f"Activity: {data['profile'].get('activity_level') or '--'}", size=13, color=W)
+
+            def switch_member(e, member_name=name):
+                current_member[0] = member_name
+                asyncio.create_task(updatemanui())
+                current_view.content = page_13
+                current_view.update()
+
+            card = ft.Container(
+                width=360,
+                height=130,
+                bgcolor=VDG,
+                padding=15,
+                border_radius=20,
+                ink=True,
+                on_click=switch_member,
+                shadow=ft.BoxShadow(
+                    spread_radius=1,
+                    blur_radius=10,
+                    color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
+                    offset=ft.Offset(0, 4),
+                ),
+                content=ft.Column(
+                    spacing=4,
+                    controls=[
+                        ft.Row(
+                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                            controls=[card_name_text, ft.Icon(ft.Icons.ACCOUNT_CIRCLE, color=LG, size=30)],
+                        ),
+                        ft.Divider(color=ft.Colors.with_opacity(0.2, W), height=10),
+                        ft.Row(spacing=20, controls=[card_age_text, card_height_text, card_activity_text]),
+                    ],
+                ),
+            )
+            cards.append(card)
+        return cards
+    def login(e):
+            entered_user = info.value
+            entered_pass = info2.value
+            if entered_user in family and family[entered_user]['password'] == entered_pass:
+                current_user[0] = entered_user
+                current_member[0] = entered_user
+                asyncio.create_task(updatemanui())
+                current_view.content = page_13
+                current_view.update()
+            else:
+                page_1.content.controls.append(loginwarn)
+                page_1.update()         
   
 
 
@@ -658,16 +838,16 @@ async def main(page: ft.Page):
 
 #page2
     squarelog= ft.Button(
-                    content= ft.Text("Log In", color=W,size=20),
-                    bgcolor=LG,
-                    top=460,
-                    left=50,
-                    width=300,
-                    elevation=15,
-                    height=30,
-                    style= ft.ButtonStyle( shape= ft.RoundedRectangleBorder(radius=5)),
-                    
-    )
+                content= ft.Text("Log In", color=W,size=20),
+                bgcolor=LG,
+                top=460,
+                left=50,
+                width=300,
+                elevation=15,
+                height=30,
+                style= ft.ButtonStyle( shape= ft.RoundedRectangleBorder(radius=5)),
+                on_click= login,
+)
 
     up=  ft.TextButton(
                     ft.Text("Don't have an account? Sign Up", color=DG, bgcolor="transparent"),
@@ -1125,11 +1305,11 @@ async def main(page: ft.Page):
     activity_radio = ft.RadioGroup(
         content=ft.Column(
             controls=[
-                ft.Radio(value="sedentary", label="Sedentary"),
-                ft.Radio(value="light", label="Lightly Active"),
-                ft.Radio(value="moderate", label="Moderately Active"),
-                ft.Radio(value="very", label="Very Active"),
-                ft.Radio(value="extra", label="Extremely Active")
+                ft.Radio(value="Sedentary", label="Sedentary"),
+                ft.Radio(value="Light", label="Lightly Active"),
+                ft.Radio(value="Moderate", label="Moderately Active"),
+                ft.Radio(value="Very Active", label="Very Active"),
+                ft.Radio(value="Extra Active", label="Extremely Active")
             ],
             spacing=0.1,
         )
@@ -1314,9 +1494,12 @@ async def main(page: ft.Page):
 
 
         asyncio.create_task(updatemanui())
-        current_view.content = page_13
-        current_view.update()
-
+        if addingmember[0]== False:
+            current_view.content= page_13
+            current_view.update()
+        elif addingmember[0]== True:
+            FAMILYTIME(None)
+            addingmember[0]= False 
 
                     
     End= ft.Button(
@@ -1617,6 +1800,14 @@ async def main(page: ft.Page):
     
         )
     photoholder= [None]
+    analysisholder = [None]
+    resultimage = ft.Image(src="", width=300, height=300, fit=ft.BoxFit.COVER)
+    resultfoodtext = ft.Text("", size=20, weight=ft.FontWeight.BOLD, color=W)
+    resultcaltext = ft.Text("", size=16, color=W)
+    resultprotext = ft.Text("", size=14, color=W)
+    resultfattext = ft.Text("", size=14, color=W)
+    resultcarbtext = ft.Text("", size=14, color=W)
+    resultsugartext = ft.Text("", size=14, color=W)
     preview= ft.Image(
         src= "",
         scale=ft.Scale(scale_x=-1, scale_y=1) ,
@@ -1660,7 +1851,7 @@ async def main(page: ft.Page):
             height=50,
             top= 600,
             left=310,
-            on_click=savingphoto
+            on_click=analyzephoto
     
     
         )
@@ -1718,6 +1909,7 @@ async def main(page: ft.Page):
             color=ft.Colors.with_opacity(0.3, ft.Colors.BLACK),
             offset=ft.Offset(0, 4),
         ),
+
         content=ft.Column(
             spacing=4,
             controls=[
@@ -1740,30 +1932,58 @@ async def main(page: ft.Page):
             ]
         )
     )
+    namenew_field=ft.TextField(
+                        hint_text="Enter member name",
+                        hint_style=ft.TextStyle(color=ft.Colors.WHITE_70),
+                        bgcolor="transparent",
+                        color=W,
+                        border_color="transparent",
+                        width=190,
+                        height=45,
+                                   )
+                    
     addwidget = ft.Container(
         width=360,
-        height=65,
+        height=80,
         bgcolor=ft.Colors.with_opacity(0.3, VDG),
         border=ft.Border.all(2, LG),
         border_radius=15,
-        left= 20,
-        top= 340,
+        padding= 8,
         alignment=ft.Alignment(0, 0),
         ink=True,
-        content=ft.Row(
+        content=ft.Column(
             alignment=ft.MainAxisAlignment.CENTER,
-            spacing=10,
+            spacing=5,
             controls=[
-                ft.Icon(ft.Icons.PERSON_ADD_ALT_1, color=W, size=22),
-                ft.Text(
-                    "Add Family Member",
-                    size=16,
-                    weight=ft.FontWeight.BOLD,
-                    color=W
-                )
-            ]
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    spacing=4,
+                    controls=[
+                    ft.Text(
+                      "Add Family Member",
+                       size=16,
+                       weight=ft.FontWeight.BOLD,
+                       color=W
+                )],
+                
+
+                ),
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    spacing=1,
+                    controls= [
+                        namenew_field,
+                        ft.IconButton(
+                            icon= ft.Icons.PERSON_ADD_ALT_1,
+                            icon_color= W,
+                            on_click= createnewmember,
+                               ),
+                    ],
+                ),
+            ],
         )
     )
+            
     menu_panel = ft.Container(
         width=250,
         height=850,
@@ -2060,6 +2280,7 @@ async def main(page: ft.Page):
                     icon_size=40,
                     icon_color= W,
                     icon= ft.Icons.MONITOR_HEART,
+                    on_click= CALENDARTIME,
             
                 )
     cam= ft.IconButton(                        
@@ -2232,8 +2453,25 @@ async def main(page: ft.Page):
          width=350,
          height=700,
     )
-
-    
+    familycards= ft.Column(
+                                            controls=[],
+                                            spacing=15)
+    calendarlist = ft.Column(controls=[], spacing=15)
+    savedaybutton = ft.Button(bgcolor=ft.Colors.with_opacity(0.4, B), content=ft.Text("Save Day", color=W, size=20), width=200, height=50, elevation=15, on_click=savingday)
+    resultbutton = ft.Button(
+        bgcolor=ft.Colors.with_opacity(0.4, B),
+        content=ft.Text("Save Result", color=W, size=20),
+        width=200, height=50, elevation=15,
+        top=600, left=95,
+        on_click=saveresult,
+    )
+    loginwarn = ft.Text(
+           "Incorrect email or password.",
+           color=P,
+           size=12,
+           top=610,
+           left=75
+       )
     calorie= {
         "target":0,
         "consumed":0,
@@ -2325,33 +2563,73 @@ async def main(page: ft.Page):
                 ]
             )
         )
-    page_15= ft.Container(
-         width=400,
-                    height=850,
+    page_15 = ft.Container(          
+        width=400,
+        height=850,
+        bgcolor=DG,
+        padding=ft.Padding(0),
+        border_radius=ft.BorderRadius.all(35),
+        content=ft.ListView(
+            expand=True,
+            controls=[
+                ft.Container(
+                    width=400,
+                    height=1200, 
                     bgcolor=DG,
-                    padding= ft.Padding(0),
                     border_radius=ft.BorderRadius.all(35),
-                    content=ft.ListView(
-                        expand=True,
+                    content=ft.Stack(
                         controls=[
-                            ft.Container(width=400,height=1000,bgcolor=DG, border_radius=ft.BorderRadius.all(35),content=
-                                   ft.Stack(
-                                             controls=[
-                                decor,
-                                maintext,
-                                tinylogo,
-                                menu1,
-                                travel,
-                                profilewidget,
-                                addwidget,
-                                             ],
-                                   ),
-            
+                            decor,
+                            maintext,
+                            tinylogo,
+                            menu1,
+                            travel,
+                            ft.Container(
+                                top=180,
+                                left=20,
+                                width=360,
+                                content=ft.Column(
+                                    spacing=20,
+                                    controls=[
+                                        familycards,  
+                                        addwidget        
+                                    ]
+                                )
                             )
-                        ]
-                    )
-               )
-         
+                        ],
+                    ),
+                )
+            ]
+        )
+    )
+            
+        
+    
+    page_17 = ft.Container(
+        width=400, height=850, bgcolor=DG, padding=ft.Padding(0), border_radius=ft.BorderRadius.all(35),
+        content=ft.ListView(expand=True, controls=[
+            ft.Container(width=400, height=1200, bgcolor=DG, border_radius=ft.BorderRadius.all(35),
+                content=ft.Stack(controls=[decor, maintext, tinylogo, menu1, travel,
+                    ft.Container(top=180, left=20, width=360, content=ft.Column(spacing=20, controls=[calendarlist, savedaybutton]))
+                ])
+            )
+        ])
+    )
+    page_16 = ft.Container(
+        width=400, height=850, bgcolor=VDG, border_radius=ft.BorderRadius.all(35),
+        content=ft.Stack(controls=[
+            ft.Container(width=400, height=850, bgcolor=VDG, border_radius=ft.BorderRadius.all(35)),
+            ft.Container(top=60, left=50, content=resultimage),
+            ft.Container(top=380, left=30, content=resultfoodtext),
+            ft.Container(top=420, left=30, content=resultcaltext),
+            ft.Container(top=450, left=30, content=resultprotext),
+            ft.Container(top=480, left=30, content=resultfattext),
+            ft.Container(top=510, left=30, content=resultcarbtext),
+            ft.Container(top=540, left=30, content=resultsugartext),
+            resultbutton,
+            menu1,
+        ])
+    )
     page_14 = ft.Container(          
             width=400,
             height=850,
